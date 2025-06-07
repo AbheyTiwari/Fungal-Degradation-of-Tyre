@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fungal Degradation of Tire Waste: An Interactive Review</title>
+    <!-- Chosen Palette: Earthy Harmony -->
+    <!-- Application Structure Plan: The SPA is structured into five thematic sections to guide the user from the core problem to the future solutions, rather than following the report's linear format. The flow is: 1) High-impact introduction to the tire waste problem with key stats. 2) An interactive module comparing conventional recycling methods against the fungal approach, allowing direct comparison of cost, efficiency, and environmental impact. 3) A deep dive into the 'Fungal Heroes' (*Penicillium* & *Aspergillus*) with an interactive chart showing their degradation performance. 4) A visually animated, step-by-step breakdown of the complex degradation mechanism. 5) A forward-looking section with tabbed content for enhancements, valorization, and challenges. This non-linear, thematic dashboard structure is chosen to facilitate user-driven exploration and make complex data relationships more understandable and engaging than a static document. -->
+    <!-- Visualization & Content Choices: 1. The Problem: Dynamic counters (JS) to inform and create impact. 2. Solutions Comparison: Interactive cards (HTML/CSS/JS) to compare multiple facets (cost, ROI, pros/cons) side-by-side, which is more effective than a table. 3. Fungal Performance: A Bar Chart (Chart.js) to quantitatively compare degradation efficiencies of different fungal strains, with tooltips for detailed data on hover. 4. Degradation Process: A vertical, animated-on-scroll process flow (HTML/CSS/JS) to organize and explain the multi-stage mechanism clearly. 5. Future Prospects: Tabbed and accordion layouts (JS) to organize dense information concisely. These choices prioritize interaction and visual clarity to distill the report's key findings. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFBF5;
+            color: #4A4A4A;
+            scroll-behavior: smooth;
+        }
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #D97706; 
+            border-bottom-color: #D97706;
+        }
+        .stat-card, .method-card, .fungus-card, .process-step, .challenge-item {
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .stat-card:hover, .method-card:hover, .fungus-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .method-button.active {
+            background-color: #D97706;
+            color: white;
+        }
+        .tab-button.active {
+            border-bottom-color: #D97706;
+            color: #D97706;
+            font-weight: 600;
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out;
+        }
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-[#FDFBF5] text-gray-800">
+
+    <header class="bg-[#FDFBF5]/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <h1 class="text-xl md:text-2xl font-bold text-green-800">Fungal Tire Solutions</h1>
+            <div class="hidden md:flex space-x-8">
+                <a href="#problem" class="nav-link px-2 py-1">The Problem</a>
+                <a href="#solutions" class="nav-link px-2 py-1">Solutions Hub</a>
+                <a href="#fungi" class="nav-link px-2 py-1">Fungal Heroes</a>
+                <a href="#process" class="nav-link px-2 py-1">How It Works</a>
+                <a href="#future" class="nav-link px-2 py-1">Future Prospects</a>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden focus:outline-none">
+                <span class="text-3xl">☰</span>
+            </button>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden">
+            <a href="#problem" class="block text-center py-2 px-4 text-sm hover:bg-green-50">The Problem</a>
+            <a href="#solutions" class="block text-center py-2 px-4 text-sm hover:bg-green-50">Solutions Hub</a>
+            <a href="#fungi" class="block text-center py-2 px-4 text-sm hover:bg-green-50">Fungal Heroes</a>
+            <a href="#process" class="block text-center py-2 px-4 text-sm hover:bg-green-50">How It Works</a>
+            <a href="#future" class="block text-center py-2 px-4 text-sm hover:bg-green-50">Future Prospects</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6">
+        
+        <section id="problem" class="py-16 md:py-24 text-center scroll-mt-20">
+            <h2 class="text-3xl md:text-5xl font-bold text-green-800 mb-4 fade-in">The Global Tire Waste Crisis</h2>
+            <p class="max-w-3xl mx-auto text-lg text-gray-600 mb-12 fade-in">End-of-life tires (ELTs) represent a monumental environmental challenge. Their durable, vulcanized structure makes them resistant to natural decay, leading to overflowing landfills and the leaching of toxic chemicals into our ecosystems. This section quantifies the scale of the problem.</p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="stat-card bg-white p-6 rounded-lg shadow-md border-t-4 border-amber-600 fade-in">
+                    <div class="text-5xl font-bold text-amber-600 mb-2" id="tires-annually">0</div>
+                    <h3 class="text-xl font-semibold text-gray-700">Billion Tires Produced Annually</h3>
+                    <p class="text-gray-500 mt-2">A staggering volume of new tires enters the global market each year, destined to become waste.</p>
+                </div>
+                <div class="stat-card bg-white p-6 rounded-lg shadow-md border-t-4 border-amber-600 fade-in">
+                    <div class="text-5xl font-bold text-amber-600 mb-2" id="landfill-years">0</div>
+                    <h3 class="text-xl font-semibold text-gray-700">Years to Decompose</h3>
+                    <p class="text-gray-500 mt-2">In landfills, tires can persist for up to 2,000 years, posing a long-term environmental burden.</p>
+                </div>
+                <div class="stat-card bg-white p-6 rounded-lg shadow-md border-t-4 border-amber-600 fade-in">
+                    <div class="text-4xl md:text-5xl font-bold text-red-600 mb-2">6PPD-Quinone</div>
+                    <h3 class="text-xl font-semibold text-gray-700">A Silent Toxin</h3>
+                    <p class="text-gray-500 mt-2">A tire preservative byproduct that is highly toxic to aquatic life, demonstrating the chemical threat from tire wear.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="solutions" class="py-16 md:py-24 bg-green-50/50 rounded-xl my-12 scroll-mt-20">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-5xl font-bold text-green-800 mb-4 fade-in">Exploring Tire Recycling Solutions</h2>
+                <p class="max-w-3xl mx-auto text-lg text-gray-600 fade-in">Various methods exist to manage tire waste, each with unique trade-offs in cost, efficiency, and environmental impact. This hub allows you to interactively compare conventional methods with the emerging fungal bioremediation approach to understand their relative strengths and weaknesses.</p>
+            </div>
+            <div class="flex flex-col md:flex-row gap-8 items-start">
+                <div class="w-full md:w-1/4 flex flex-col space-y-3 fade-in">
+                    <button class="method-button w-full text-left p-4 rounded-lg bg-white shadow-sm transition" data-method="fungal">🍄 Fungal Bioremediation</button>
+                    <button class="method-button w-full text-left p-4 rounded-lg bg-white shadow-sm transition" data-method="mechanical">⚙️ Mechanical Grinding</button>
+                    <button class="method-button w-full text-left p-4 rounded-lg bg-white shadow-sm transition" data-method="pyrolysis">🔥 Pyrolysis</button>
+                    <button class="method-button w-full text-left p-4 rounded-lg bg-white shadow-sm transition" data-method="chemical">🧪 Chemical Devulcanization</button>
+                </div>
+                <div id="method-details" class="w-full md:w-3/4 bg-white p-8 rounded-lg shadow-lg fade-in">
+                </div>
+            </div>
+        </section>
+        
+        <section id="fungi" class="py-16 md:py-24 text-center scroll-mt-20">
+            <h2 class="text-3xl md:text-5xl font-bold text-green-800 mb-4 fade-in">Fungal Heroes: Nature's Recyclers</h2>
+            <p class="max-w-3xl mx-auto text-lg text-gray-600 mb-12 fade-in">Certain species of fungi, particularly from the *Penicillium* and *Aspergillus* genera, have demonstrated a remarkable ability to degrade the complex polymers in rubber. They secrete powerful enzymes that break down these resilient materials, offering a low-energy, eco-friendly solution. This section introduces these key players and visualizes their performance.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+                <div class="fungus-card bg-white p-6 rounded-lg shadow-md text-left fade-in">
+                    <h3 class="text-2xl font-bold text-green-700 mb-2">Penicillium chrysogenum</h3>
+                    <p class="text-gray-600">Famous for producing penicillin, this common mold is also a powerful bioremediator. Studies show it can achieve significant weight loss of natural rubber within a month by secreting enzymes like laccases and peroxidases that attack rubber's polymer backbone.</p>
+                </div>
+                <div class="fungus-card bg-white p-6 rounded-lg shadow-md text-left fade-in">
+                    <h3 class="text-2xl font-bold text-green-700 mb-2">Aspergillus niger</h3>
+                    <p class="text-gray-600">A versatile industrial fungus, *A. niger* is known for producing citric acid and various enzymes. It degrades rubber by secreting cutinases and oxygenases, and its ability to produce organic acids may help neutralize toxic metals in tire waste, aiding the degradation process.</p>
+                </div>
+            </div>
+            <div class="fade-in">
+                <h3 class="text-2xl md:text-3xl font-bold text-green-800 mb-4">Degradation Efficiency Comparison</h3>
+                <p class="max-w-2xl mx-auto text-gray-600 mb-8">This chart summarizes results from various lab studies, showing the percentage of rubber weight loss achieved by different fungal strains over specific timeframes. Hover over the bars for details. Note that conditions vary between studies.</p>
+                <div class="chart-container">
+                    <canvas id="degradationChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section id="process" class="py-16 md:py-24 bg-green-50/50 rounded-xl my-12 scroll-mt-20">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-5xl font-bold text-green-800 mb-4 fade-in">How It Works: The Fungal Degradation Pathway</h2>
+                <p class="max-w-3xl mx-auto text-lg text-gray-600 fade-in">Fungal degradation is not a single event but a multi-stage process. Fungi methodically break down complex polymers into simple, usable molecules. Explore the four key stages of this natural recycling process, which transforms persistent waste into harmless byproducts and fungal biomass.</p>
+            </div>
+            <div class="relative max-w-2xl mx-auto">
+                <div class="absolute left-1/2 -translate-x-1/2 top-0 h-full w-0.5 bg-green-200"></div>
+                <div class="space-y-12">
+                    <div class="process-step relative pl-8 md:pl-0 md:w-1/2 md:ml-auto md:pr-8 fade-in">
+                        <div class="absolute left-1/2 -translate-x-1/2 md:left-auto md:right-0 md:translate-x-1/2 -top-1 w-8 h-8 rounded-full bg-amber-600 text-white flex items-center justify-center font-bold">1</div>
+                        <div class="bg-white p-6 rounded-lg shadow-md">
+                            <h3 class="text-xl font-bold text-green-700 mb-2">Biodeterioration</h3>
+                            <p class="text-gray-600">Fungal hyphae (filaments) attach to the rubber surface. They begin to alter its physical and chemical properties, creating microscopic cracks and increasing water absorption, which prepares the material for enzymatic attack.</p>
+                        </div>
+                    </div>
+                    <div class="process-step relative pl-8 md:pl-0 md:w-1/2 md:pr-8 md:mr-auto text-left md:text-right fade-in">
+                        <div class="absolute left-1/2 -translate-x-1/2 md:right-auto md:left-0 md:-translate-x-1/2 -top-1 w-8 h-8 rounded-full bg-amber-600 text-white flex items-center justify-center font-bold">2</div>
+                         <div class="bg-white p-6 rounded-lg shadow-md">
+                            <h3 class="text-xl font-bold text-green-700 mb-2">Bio-fragmentation</h3>
+                            <p class="text-gray-600">The fungus secretes powerful extracellular enzymes (like laccase and peroxidase). These enzymes act like molecular scissors, breaking down the long, complex rubber polymer chains into smaller, more manageable fragments (oligomers and monomers).</p>
+                        </div>
+                    </div>
+                    <div class="process-step relative pl-8 md:pl-0 md:w-1/2 md:ml-auto md:pr-8 fade-in">
+                         <div class="absolute left-1/2 -translate-x-1/2 md:left-auto md:right-0 md:translate-x-1/2 -top-1 w-8 h-8 rounded-full bg-amber-600 text-white flex items-center justify-center font-bold">3</div>
+                         <div class="bg-white p-6 rounded-lg shadow-md">
+                            <h3 class="text-xl font-bold text-green-700 mb-2">Assimilation</h3>
+                            <p class="text-gray-600">The smaller, water-soluble fragments are absorbed by the fungal cells. The fungus then uses these molecules as a source of carbon and energy for its own growth and metabolism, effectively "eating" the rubber.</p>
+                        </div>
+                    </div>
+                     <div class="process-step relative pl-8 md:pl-0 md:w-1/2 md:pr-8 md:mr-auto text-left md:text-right fade-in">
+                        <div class="absolute left-1/2 -translate-x-1/2 md:right-auto md:left-0 md:-translate-x-1/2 -top-1 w-8 h-8 rounded-full bg-amber-600 text-white flex items-center justify-center font-bold">4</div>
+                         <div class="bg-white p-6 rounded-lg shadow-md">
+                            <h3 class="text-xl font-bold text-green-700 mb-2">Mineralization</h3>
+                            <p class="text-gray-600">In the final stage, the assimilated carbon is completely broken down. The ultimate byproducts are simple, harmless compounds like carbon dioxide (CO₂) and water (H₂O), returning the elements to the natural environmental cycle.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="future" class="py-16 md:py-24 scroll-mt-20">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-5xl font-bold text-green-800 mb-4 fade-in">Future Prospects & Challenges</h2>
+                <p class="max-w-3xl mx-auto text-lg text-gray-600 fade-in">While promising, fungal bioremediation is an emerging field. Realizing its full potential requires overcoming challenges in scalability and efficiency, while exploring pathways to create valuable new materials from the waste. This section covers the path forward.</p>
+            </div>
+            <div class="max-w-4xl mx-auto fade-in">
+                <div class="border-b border-gray-200 mb-8">
+                    <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+                        <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-lg border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="valorization">Valorization</button>
+                        <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-lg border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="enhancements">Enhancements</button>
+                        <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-lg border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="challenges">Challenges</button>
+                    </nav>
+                </div>
+                <div id="tab-content">
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <footer class="bg-green-800 text-white mt-24">
+        <div class="container mx-auto px-6 py-8 text-center">
+            <p>Interactive Review on Fungal Tire Degradation.</p>
+            <p class="text-sm text-green-200 mt-2">Content synthesized from the comprehensive review on Fungal Degradation of Tire Waste Using *Penicillium* and *Aspergillus*.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            
+            const stats = {
+                tiresAnnually: 1.5,
+                landfillYears: 2000,
+            };
+
+            function animateValue(id, start, end, duration, decimals = 0, suffix = '') {
+                const obj = document.getElementById(id);
+                let startTimestamp = null;
+                const step = (timestamp) => {
+                    if (!startTimestamp) startTimestamp = timestamp;
+                    const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                    const value = progress * (end - start) + start;
+                    obj.innerHTML = value.toFixed(decimals).replace(/\B(?=(\d{3})+(?!\d))/g, ",") + suffix;
+                    if (progress < 1) {
+                        window.requestAnimationFrame(step);
+                    }
+                };
+                window.requestAnimationFrame(step);
+            }
+
+            const methodsData = {
+                fungal: {
+                    title: '🍄 Fungal Bioremediation',
+                    description: 'Utilizes fungi like *Penicillium* and *Aspergillus* to naturally break down rubber polymers. This eco-friendly process operates at ambient temperatures, converting waste into biomass, CO₂, and water.',
+                    cost: 'Low (potentially)',
+                    scalability: 'Low (currently R&D)',
+                    pros: ['Eco-friendly, low energy use', 'Potential for valorization into new products', 'Can detoxify harmful chemicals'],
+                    cons: ['Very slow degradation rates', 'Not yet proven at industrial scale', 'Efficiency varies by strain and conditions']
+                },
+                mechanical: {
+                    title: '⚙️ Mechanical Grinding',
+                    description: 'Physically shreds tires into "crumb rubber". It is the most common and established method, but the process damages rubber polymers, limiting reuse in high-value products.',
+                    cost: '$0.10 - $0.30 / kg',
+                    scalability: 'High',
+                    pros: ['Low cost, simple process', 'Established market for crumb rubber'],
+                    cons: ['Low-value output', 'High energy consumption', 'Does not address chemical toxicity']
+                },
+                pyrolysis: {
+                    title: '🔥 Pyrolysis',
+                    description: 'Thermally decomposes tires in an oxygen-free environment, yielding oil, gas, and carbon black. This method recovers energy but is energy-intensive and can produce toxic emissions.',
+                    cost: '$0.50 - $1.00 / kg',
+                    scalability: 'Medium',
+                    pros: ['Recovers energy and materials', 'Reduces landfill volume significantly'],
+                    cons: ['High energy requirements', 'Potential for toxic air pollution', 'Quality of byproducts can be inconsistent']
+                },
+                chemical: {
+                    title: '🧪 Chemical Devulcanization',
+                    description: 'Uses chemical agents to break the sulfur cross-links in vulcanized rubber, restoring its plasticity. This allows for a higher percentage of recycled content in new tires.',
+                    cost: '$0.80 - $1.50 / kg',
+                    scalability: 'High (emerging)',
+                    pros: ['Produces higher-quality recycled rubber', 'Allows for closed-loop recycling'],
+                    cons: ['Uses chemical solvents', 'Can be expensive', 'Potential for unwanted side reactions']
+                }
+            };
+            
+            const methodButtons = document.querySelectorAll('.method-button');
+            const methodDetailsContainer = document.getElementById('method-details');
+
+            function updateMethodDetails(method) {
+                const data = methodsData[method];
+                methodDetailsContainer.innerHTML = `
+                    <h3 class="text-3xl font-bold text-green-700 mb-4">${data.title}</h3>
+                    <p class="text-gray-600 mb-6">${data.description}</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div><strong class="block text-gray-700">Est. Cost:</strong><span class="text-amber-700 font-semibold">${data.cost}</span></div>
+                        <div><strong class="block text-gray-700">Scalability:</strong><span class="text-amber-700 font-semibold">${data.scalability}</span></div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <h4 class="font-bold text-green-600 mb-2">Pros</h4>
+                            <ul class="list-disc list-inside text-gray-600 space-y-1">${data.pros.map(p => `<li>${p}</li>`).join('')}</ul>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-red-600 mb-2">Cons</h4>
+                            <ul class="list-disc list-inside text-gray-600 space-y-1">${data.cons.map(c => `<li>${c}</li>`).join('')}</ul>
+                        </div>
+                    </div>
+                `;
+            }
+
+            methodButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    methodButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    updateMethodDetails(button.dataset.method);
+                });
+            });
+
+            const degradationData = {
+                labels: ['Penicillium chrysogenum', 'Aspergillus niger', 'A. niger', 'P. chrysogenum', 'Phlebia radiata', 'Trametes versicolor', 'Penicillium variabile'],
+                datasets: [{
+                    label: '% Weight Loss',
+                    data: [64.3, 60, 28.3, 40, 27.7, 7.5, 15],
+                    backgroundColor: 'rgba(34, 139, 34, 0.6)',
+                    borderColor: 'rgba(34, 139, 34, 1)',
+                    borderWidth: 1,
+                    hoverBackgroundColor: 'rgba(217, 119, 6, 0.8)',
+                    hoverBorderColor: 'rgba(217, 119, 6, 1)',
+                }]
+            };
+
+            const chartCtx = document.getElementById('degradationChart').getContext('2d');
+            new Chart(chartCtx, {
+                type: 'bar',
+                data: degradationData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Weight Loss (%)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        label += context.parsed.y + '%';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            const tabsData = {
+                valorization: {
+                    title: 'Valorization: From Waste to Worth',
+                    content: `
+                        <p class="text-gray-600 mb-6">The ultimate goal is not just disposal, but creating value. Fungal degradation opens pathways to a circular economy for tires.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="bg-green-50 p-4 rounded-lg"><strong>Biopolymers:</strong> Fungi can convert rubber waste into new, biodegradable plastic-like materials for construction and other industries.</div>
+                            <div class="bg-green-50 p-4 rounded-lg"><strong>Asphalt Modifiers:</strong> Partially degraded rubber can be used as a superior additive in asphalt, improving road durability and reducing noise.</div>
+                            <div class="bg-green-50 p-4 rounded-lg"><strong>Valuable Enzymes:</strong> The enzymes produced by the fungi during degradation can themselves be harvested for other industrial applications.</div>
+                            <div class="bg-green-50 p-4 rounded-lg"><strong>Chemical Feedstocks:</strong> Research aims to guide the degradation process to produce specific high-value chemical precursors for manufacturing.</div>
+                        </div>
+                    `
+                },
+                enhancements: {
+                    title: 'Enhancements: Accelerating Nature',
+                    content: `
+                        <p class="text-gray-600 mb-6">To make fungal degradation viable at an industrial scale, researchers are exploring ways to boost its speed and efficiency.</p>
+                        <ul class="list-disc list-inside space-y-3 text-gray-600">
+                            <li><strong>Genetic Engineering (CRISPR):</strong> Modifying fungal DNA to over-express the most effective rubber-degrading enzymes, creating "super-strains".</li>
+                            <li><strong>Microbial Consortia:</strong> Combining different species of fungi and bacteria that work synergistically. One microbe might detoxify the rubber while another breaks down the polymer backbone.</li>
+                            <li><strong>Process Optimization:</strong> Fine-tuning environmental conditions like temperature, pH, and nutrients in bioreactors to maximize fungal activity.</li>
+                            <li><strong>Pre-treatment:</strong> Using an initial, mild physical or biological step to "soften up" the rubber, making it easier for the primary fungi to attack.</li>
+                        </ul>
+                    `
+                },
+                challenges: {
+                    title: 'Challenges on the Road Ahead',
+                    content: `
+                        <p class="text-gray-600 mb-6">Several hurdles must be overcome to transition this technology from the lab to widespread use. Click each item to learn more.</p>
+                        <div class="space-y-4" id="accordion">
+                            <div class="challenge-item border rounded-lg">
+                                <button class="accordion-header w-full flex justify-between items-center p-4 text-left font-semibold">
+                                    <span>Industrial Scalability</span><span>+</span>
+                                </button>
+                                <div class="accordion-content px-4 pb-4 text-gray-600">
+                                    <p>Moving from small lab flasks to large industrial bioreactors that can process tons of material is a major engineering challenge. Maintaining optimal conditions and ensuring consistent results at scale is difficult.</p>
+                                </div>
+                            </div>
+                            <div class="challenge-item border rounded-lg">
+                                <button class="accordion-header w-full flex justify-between items-center p-4 text-left font-semibold">
+                                    <span>Slow Degradation Rate</span><span>+</span>
+                                </button>
+                                <div class="accordion-content px-4 pb-4 text-gray-600">
+                                    <p>Even with enhancements, biological processes are inherently slower than mechanical or chemical ones. Reducing the time from months to weeks or days is a key research goal for economic viability.</p>
+                                </div>
+                            </div>
+                            <div class="challenge-item border rounded-lg">
+                                <button class="accordion-header w-full flex justify-between items-center p-4 text-left font-semibold">
+                                    <span>Economic Viability & Regulation</span><span>+</span>
+                                </button>
+                                <div class="accordion-content px-4 pb-4 text-gray-600">
+                                    <p>The final product must be cost-competitive with virgin materials or conventional recycled rubber. This requires not only efficient technology but also supportive government policies and incentives. Safety regulations for byproducts and genetically modified organisms must also be navigated.</p>
+                                </div>
+                            </div>
+                        </div>
+                    `
+                }
+            };
+
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabContentContainer = document.getElementById('tab-content');
+
+            function updateTabContent(tab) {
+                const data = tabsData[tab];
+                tabContentContainer.innerHTML = `
+                    <div>
+                        <h3 class="text-2xl font-bold mb-4 text-green-700">${data.title}</h3>
+                        ${data.content}
+                    </div>
+                `;
+                if (tab === 'challenges') {
+                    setupAccordion();
+                }
+            }
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    updateTabContent(button.dataset.tab);
+                });
+            });
+
+            function setupAccordion() {
+                const accordionHeaders = document.querySelectorAll('.accordion-header');
+                accordionHeaders.forEach(header => {
+                    header.addEventListener('click', () => {
+                        const content = header.nextElementSibling;
+                        const isOpen = content.style.maxHeight;
+
+                        document.querySelectorAll('.accordion-content').forEach(c => c.style.maxHeight = null);
+                        document.querySelectorAll('.accordion-header span:last-child').forEach(s => s.textContent = '+');
+
+                        if (!isOpen || isOpen === "0px") {
+                            content.style.maxHeight = content.scrollHeight + "px";
+                            header.querySelector('span:last-child').textContent = '-';
+                        }
+                    });
+                });
+            }
+
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+            document.querySelectorAll('#mobile-menu a').forEach(link => {
+                link.addEventListener('click', () => mobileMenu.classList.add('hidden'));
+            });
+            
+            const fadeElems = document.querySelectorAll('.fade-in');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            fadeElems.forEach(elem => observer.observe(elem));
+            
+            animateValue("tires-annually", 0, stats.tiresAnnually, 2000, 1);
+            animateValue("landfill-years", 0, stats.landfillYears, 2000, 0);
+
+            methodButtons[0].click();
+            tabButtons[0].click();
+        });
+    </script>
+</body>
+</html>
