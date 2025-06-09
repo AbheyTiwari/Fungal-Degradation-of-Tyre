@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Chemical Anatomy of a Modern Tire: An Infographic</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .ply-diagram-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+            margin-top: 1.5rem;
+        }
+        .ply-diagram {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            border: 3px solid #6A4A3C;
+            border-radius: 50%;
+            overflow: hidden;
+            background-color: #ffffff;
+        }
+        .ply-line {
+            position: absolute;
+            background-color: #00A0B0;
+            height: 2px;
+            width: 200%;
+            left: -50%;
+            top: 50%;
+        }
+        .radial .ply-line {
+            transform: rotate(11deg);
+        }
+        .bias .ply-line:nth-child(1) { transform: rotate(50deg); background-color: #EB6841; }
+        .bias .ply-line:nth-child(2) { transform: rotate(-50deg); background-color: #00A0B0; }
+
+        .flowchart-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            width: 100%;
+        }
+        .flowchart-item {
+            background-color: #EDC951;
+            color: #6A4A3C;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            text-align: center;
+            font-weight: 600;
+            width: 80%;
+            max-width: 300px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .flowchart-arrow {
+            font-size: 2.5rem;
+            color: #00A0B0;
+            line-height: 1;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <!--
+    Infographic Narrative Plan:
+    1. Introduction: Hook with the tire's complexity. Visualize overall composition.
+    2. Problem Statement & Biosphere Solution: Introduce the challenge of tire degradation and the proposed microbial solution.
+    3. Elastomers: Compare Natural vs. Synthetic rubbers. Highlight supply chain risks.
+    4. Reinforcement: Explain steel/textile roles. Visualize Bias vs. Radial ply structure.
+    5. Fillers: Pit Carbon Black against Silica. Introduce the "Green Tire" concept.
+    6. Chemical Additives: Detail the chemical systems. Visualize vulcanization process. Use tables/icons for others.
+    7. Future Trends: Conclude with sustainability and innovation themes.
+
+    Visualization Choices & Justification:
+    - Overall Composition: Donut Chart (Chart.js). Goal: Compare. Justification: Best for showing parts-of-a-whole composition. No SVG.
+    - Rubber Properties: Grouped Bar Chart (Chart.js). Goal: Compare. Justification: Ideal for direct comparison of categories across multiple metrics. No SVG.
+    - Ply Structure: HTML/CSS Diagram. Goal: Organize/Explain. Justification: Required method to show structural concepts without SVG/Mermaid. No SVG. No Mermaid JS.
+    - Filler Performance: Grouped Bar Chart (Chart.js). Goal: Compare. Justification: Best for side-by-side comparison of two items. No SVG.
+    - Vulcanization Process: HTML/CSS Flowchart. Goal: Organize/Process. Justification: Visualizes a sequence effectively without banned libraries. No SVG. No Mermaid JS.
+    - Additives Table: HTML Table. Goal: Organize. Justification: Optimal for presenting detailed, structured data. No SVG.
+    - Icons: Unicode characters. Goal: Inform. Justification: Simple, effective visual cues without using image files or SVG.
+
+    Color Palette: Energetic & Playful (#00A0B0, #6A4A3C, #CC333F, #EB6841, #EDC951)
+
+    Confirmation: NEITHER Mermaid JS NOR SVG were used in this output.
+    -->
+
+    <div class="container mx-auto p-4 md:p-8 max-w-7xl">
+
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-6xl font-black text-[#00A0B0] mb-4">The Chemical Anatomy of a Modern Tire</h1>
+            <p class="text-xl md:text-2xl text-gray-600 max-w-4xl mx-auto">A deep dive into the complex materials science and chemical engineering that allow a simple rubber ring to ensure our safety, efficiency, and mobility.</p>
+        </header>
+
+        <main class="space-y-12">
+
+            <section id="composition">
+                <div class="bg-white rounded-lg shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-bold text-[#6A4A3C] mb-4 text-center">A Precisely Engineered Composite</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                        <div>
+                            <p class="text-lg mb-4">A modern tire is not a singular material but a highly engineered composite, incorporating up to 25 distinct components and as many as 12 different rubber compounds. Each ingredient is meticulously selected and processed, with their interactions precisely controlled to achieve critical performance attributes.</p>
+                            <p class="text-md text-gray-600">This quantitative breakdown reveals the tire's underlying synergy. Continuous innovation in manipulating these intricate material interactions leads directly to ongoing improvements in safety, efficiency, and durability.</p>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="compositionChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="problem-solution">
+                <div class="bg-white rounded-lg shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-bold text-[#6A4A3C] mb-4 text-center">The Tire's Enduring Challenge: Degradation & Recycling</h2>
+                    <p class="text-lg mb-4">Tires are engineered for extreme durability, a quality that becomes a significant environmental challenge at their end-of-life. Their complex chemical makeup makes them highly resistant to natural degradation, leading to millions of tires accumulating in landfills globally.</p>
+
+                    <h3 class="text-2xl font-bold text-[#EB6841] mb-3">Problem Statement: Persistent Complexity</h3>
+                    <p class="mb-4">A single tire is a sophisticated matrix of diverse, highly resilient materials, including:</p>
+                    <ul class="list-disc list-inside space-y-1 text-gray-700 mb-6">
+                        <li>Natural & synthetic rubber</li>
+                        <li>Steel wires</li>
+                        <li>Zinc oxide</li>
+                        <li>Vulcanized sulfur crosslinks</li>
+                        <li>Nylon and polyester textiles</li>
+                        <li>Carbon black</li>
+                        <li>Antioxidants and plasticizers</li>
+                    </ul>
+                    <p class="mb-4">This inherent complexity renders tires exceptionally resistant to natural degradation. Even specialized fungi capable of breaking down natural rubber components struggle with the synthetic materials, robust sulfur bonds, and embedded metals. Traditional research often focuses on degrading only the rubber elements, leaving behind substantial toxic and structural residues untouched, preventing true end-of-life solutions.</p>
+
+                    <h3 class="text-2xl font-bold text-[#00A0B0] mb-3">🌱 Proposed Biosphere-Based Solution: A Symbiotic Microbial Ecosystem</h3>
+                    <p class="mb-4">This innovative approach envisions a symbiotic microbial ecosystem, where diverse microorganisms are engineered to collectively dismantle a tire's complex structure, component by component:</p>
+                    <ul class="list-disc list-inside space-y-2 text-gray-700 mb-6">
+                        <li><span class="font-bold">Rubber Eaters:</span> Fungi like <span class="font-semibold">Aspergillus</span> and <span class="font-semibold">Penicillium</span> specifically target and break down natural rubber components.</li>
+                        <li><span class="font-bold">Plastic Eaters:</span> Microbes such as <span class="font-semibold">Ideonella sakaiensis</span> (for polyester) and <span class="font-semibold">Aspergillus flavus</span> (for nylon) are utilized to degrade the resilient nylon and polyester textile layers.</li>
+                        <li><span class="font-bold">Steel Corroders:</span> Specialized bacteria like <span class="font-semibold">Leptospirillum</span> and <span class="font-semibold">Gallionella</span> facilitate the bio-corrosion of steel wires, converting metallic iron into soluble forms.</li>
+                        <li><span class="font-bold">Sulfur Reducers:</span> <span class="font-semibold">Desulfovibrio</span> species are employed to break down the highly stable sulfur crosslinks that give vulcanized rubber its durability, enabling further degradation.</li>
+                        <li><span class="font-bold">Zinc Detoxers:</span> Fungi like <span class="font-semibold">Aspergillus niger</span> and various chelators (e.g., microbial siderophores) are used to neutralize or immobilize zinc oxide, which can be toxic to other microbes and the environment.</li>
+                        <li><span class="font-bold">Nitrogen Fixers:</span> <span class="font-semibold">Rhizobium</span> and <span class="font-semibold">Azotobacter</span> provide essential nitrogen compounds, supporting the growth and metabolic activity of the entire microbial community.</li>
+                        <li><span class="font-bold">Carbon Black:</span> While largely inert to biological degradation, carbon black is repurposed to act as a crucial **microbial scaffolding**, providing a high surface area for microbial colonization and biofilm formation, accelerating the degradation process.</li>
+                    </ul>
+
+                    <h3 class="text-2xl font-bold text-[#EDC951] mb-3">🧮 The Final Innovation: A Self-Regulating Biosphere</h3>
+                    <p class="mb-4">To ensure the stability and efficacy of this complex system, mathematical models will be fundamental:</p>
+                    <ul class="list-disc list-inside space-y-2 text-gray-700">
+                        <li><span class="font-bold">Optimal Microbial Ratios:</span> Ordinary Differential Equations (ODEs) and Lotka–Volterra systems will calculate the ideal starting concentrations and dynamic ratios of each microbial species to maximize degradation efficiency for all tire components.</li>
+                        <li><span class="font-bold">Preventing Ecological Imbalance:</span> Agent-based simulations will model competitive and synergistic interactions to prevent any single microbial population from dominating or dying out prematurely, ensuring a balanced, multi-stage degradation.</li>
+                        <li><span class="font-bold">Auto-Termination:</span> The system is designed to self-regulate and auto-terminate once the tire is fully consumed. This is achieved by programming a natural depletion of critical nutrients (like nitrogen) or key substrates, leading to the controlled cessation of microbial activity.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="solution-enhancement">
+                <div class="bg-white rounded-lg shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-bold text-[#6A4A3C] mb-4 text-center">Enhancing the Biosphere-Based Solution: Towards Practical Implementation</h2>
+                    <p class="text-lg mb-4">The proposed symbiotic microbial ecosystem offers a visionary pathway for complete tire degradation. To advance this concept towards practical application, further considerations and refinements are crucial:</p>
+
+                    <h3 class="text-2xl font-bold text-[#00A0B0] mb-3">Refining Microbial Roles & Byproduct Management</h3>
+                    <ul class="list-disc list-inside space-y-2 text-gray-700 mb-6">
+                        <li><span class="font-bold">Advanced Plastic Degradation:</span> Explore a broader consortium of plastic-degrading enzymes (e.g., from *Listeria monocytogenes* for nylon) and microbes for other synthetic rubber types (e.g., SBR, BR), which are often more recalcitrant than PET/nylon.</li>
+                        <li><span class="font-bold">Sulfur Metabolism Byproducts:</span> Detail how sulfur-reducing bacteria will manage the sulfur compounds released. Will they be converted to benign forms (e.g., elemental sulfur for recovery) or volatile, potentially toxic gases (e.g., hydrogen sulfide) that need mitigation? Incorporate sulfur-oxidizing bacteria (e.g., *Thiobacillus*) to complete the sulfur cycle.</li>
+                        <li><span class="font-bold">Metal Recovery & Detoxification:</span> Beyond neutralization, explore **bioleaching** for valuable metal recovery (e.g., zinc, potentially iron). Microbes can solubilize these metals, allowing for their extraction and reuse, thus transforming waste into resources.</li>
+                        <li><span class="font-bold">Antioxidant/Plasticizer Breakdown:</span> Integrate microbes capable of degrading complex organic additives like **aromatic amines** (antioxidants/antiozonants) and various **petroleum-based plasticizers** to prevent their accumulation as residual toxins.</li>
+                    </ul>
+
+                    <h3 class="text-2xl font-bold text-[#EB6841] mb-3">Optimizing Environmental Controls & System Design</h3>
+                    <ul class="list-disc list-inside space-y-2 text-gray-700 mb-6">
+                        <li><span class="font-bold">Controlled Bioreactors:</span> Develop specialized bioreactor designs (e.g., agitated tanks, trickling filters, or even solid-state bioreactors) that can maintain optimal conditions (temperature, pH, oxygen levels, moisture) for the diverse microbial consortia to thrive and effectively degrade whole tires.</li>
+                        <li><span class="font-bold">Pre-treatment for Efficiency:</span> Consider initial mechanical pre-treatment (e.g., shredding, cryo-grinding) of tires to increase surface area, reduce physical barriers, and accelerate microbial access to internal components.</li>
+                        <li><span class="font-bold">Real-time Monitoring & Feedback:</span> Integrate advanced sensors (e.g., for pH, dissolved oxygen, nutrient levels, microbial population densities, specific degradation markers) with the mathematical models. This allows for real-time adjustments to environmental parameters and nutrient dosing, optimizing degradation rates and preventing imbalances.</li>
+                        <li><span class="font-bold">Robust Containment Strategies:</span> Implement multi-layered containment systems (e.g., sealed bioreactors, HEPA filtration for air, advanced effluent treatment) to prevent any unintended release of engineered or highly active microbial species into the environment.</li>
+                    </ul>
+
+                    <h3 class="text-2xl font-bold text-[#EDC951] mb-3">Scalability, Safety, and Long-Term Viability</h3>
+                    <ul class="list-disc list-inside space-y-2 text-gray-700">
+                        <li><span class="font-bold">Genetic Stability & Biocontainment:</span> Employ strategies like **auxotrophy** (requiring specific nutrients not found in the environment) or **suicide genes** (activated upon escape or specific environmental triggers) to ensure the biocontainment and auto-termination of engineered microbes outside the controlled bioreactor environment.</li>
+                        <li><span class="font-bold">Waste Stream Valorization:</span> Explore the potential to recover valuable raw materials (e.g., metals, specific organic compounds) or even bioenergy from the degradation process, moving beyond simple disposal to a circular economy model.</li>
+                        <li><span class="font-bold">Lifecycle Assessment:</span> Conduct a comprehensive lifecycle assessment to evaluate the environmental footprint of this biosphere-based solution compared to current tire recycling methods, ensuring it truly offers a net environmental benefit.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="rubbers">
+                 <h2 class="text-3xl font-bold text-[#6A4A3C] mb-4 text-center">The Polymeric Backbone: Natural & Synthetic Rubbers</h2>
+                 <p class="text-lg text-center max-w-3xl mx-auto mb-8">The foundation of any tire is its elastomers. The strategic blending of natural rubber's resilience with the tailored properties of various synthetic rubbers is a core aspect of advanced materials engineering in the tire industry.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="bg-white rounded-lg shadow-lg p-6">
+                        <h3 class="text-2xl font-bold text-[#00A0B0] mb-3">🌳 Natural Rubber (Polyisoprene)</h3>
+                        <p class="mb-4">Sourced from the latex of the *Hevea brasiliensis* tree, natural rubber is prized for its excellent elasticity, low heat buildup, and resistance to cuts and tears. It is a vital component in all tires, especially for heavy-duty applications.</p>
+                        <div class="bg-red-100 border-l-4 border-[#CC333F] text-red-800 p-4 rounded-r-lg">
+                            <p class="font-bold">Supply Chain Vulnerability</p>
+                            <p>Over <span class="text-2xl font-black text-[#CC333F]">90%</span> of the world's natural rubber originates from Southeast Asia, creating a significant supply risk due to potential disease outbreaks in genetically limited tree populations.</p>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-lg p-6">
+                        <h3 class="text-2xl font-bold text-[#EB6841] mb-3">🔬 Synthetic Rubbers</h3>
+                        <p class="mb-4">Manufactured from petrochemicals, synthetic rubbers like SBR and Butadiene Rubber (BR) allow engineers to precisely tailor properties like heat resistance, durability, and tread wear for specific applications.</p>
+                        <ul class="list-disc list-inside space-y-1 text-gray-700">
+                            <li><span class="font-semibold">Styrene-Butadiene Rubber (SBR):</span> Versatile tread material.</li>
+                             <li><span class="font-semibold">Butadiene Rubber (BR):</span> High abrasion resistance for sidewalls.</li>
+                            <li><span class="font-semibold">Butyl Rubber (BIIR):</span> High gas impermeability for inner liners.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section id="reinforcement">
+                <div class="bg-white rounded-lg shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-bold text-[#6A4A3C] mb-4 text-center">Structural Reinforcement: Steel & Textiles</h2>
+                    <p class="text-lg text-center max-w-3xl mx-auto mb-8">A tire's structural integrity is provided by non-elastomeric materials. The arrangement of these reinforcing cords, known as the ply, is a defining feature of tire design, profoundly influencing vehicle dynamics, fuel economy, and passenger safety.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                        <div>
+                            <h3 class="text-2xl font-bold text-[#00A0B0] mb-2">Bias-Ply vs. Radial-Ply</h3>
+                            <p class="mb-4"><span class="font-bold text-[#CC333F]">Bias-Ply:</span> Cords are laid at opposing angles (~50°). This traditional construction is durable but generates more heat and has higher rolling resistance.</p>
+                             <p><span class="font-bold text-[#00A0B0]">Radial-Ply:</span> Cords are laid nearly perpendicular to the tire's axis (~90°), with a steel belt for reinforcement. This modern design offers superior steering, lower rolling resistance, and significantly longer mileage.</p>
+                        </div>
+                        <div class="ply-diagram-container">
+                            <div class="text-center">
+                                <div class="ply-diagram bias">
+                                    <div class="ply-line"></div>
+                                    <div class="ply-line"></div>
+                                </div>
+                                <p class="mt-2 font-semibold">Bias-Ply</p>
+                            </div>
+                            <div class="text-center">
+                               <div class="ply-diagram radial">
+                                    <div class="ply-line"></div>
+                                </div>
+                                <p class="mt-2 font-semibold">Radial-Ply</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+             <section id="fillers">
+                <div class="bg-white rounded-lg shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-bold text-[#6A4A3C] mb-4 text-center">The Performance Revolution: Fillers</h2>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                        <div>
+                             <p class="text-lg mb-4">Particulate fillers are critical for enhancing rubber's properties. The industry shift from traditional Carbon Black to advanced Silica fillers marks a profound transformation in tire technology, often called the "green tire" revolution.</p>
+                             <p class="text-md text-gray-600">This transition is driven by silica's unique ability to simultaneously enhance wet grip (a key safety feature) and reduce rolling resistance (improving fuel efficiency), demonstrating a move toward multi-functional, sustainable materials.</p>
+                             <div class="mt-4 bg-green-100 border-l-4 border-green-500 text-green-800 p-4 rounded-r-lg">
+                                <p><span class="font-bold">Sustainable Sourcing:</span> Increasingly, silica is derived from rice husk ashes, an energy-efficient and renewable by-product of agriculture.</p>
+                            </div>
+                        </div>
+                         <div class="chart-container w-full max-w-lg">
+                            <canvas id="fillerChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+             <section id="additives">
+                <h2 class="text-3xl font-bold text-[#6A4A3C] mb-4 text-center">The Chemical Toolkit: A Symphony of Additives</h2>
+                 <p class="text-lg text-center max-w-3xl mx-auto mb-8">A sophisticated chemical system is required to transform raw rubber into a durable, high-performance product capable of withstanding extreme operating conditions and environmental exposure over extended periods.</p>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="bg-white rounded-lg shadow-lg p-6">
+                        <h3 class="text-2xl font-bold text-[#EB6841] mb-4">The Vulcanization Process</h3>
+                        <p class="mb-6">Vulcanization is the crucial chemical process, typically using sulfur, that creates a stable, net-like structure in rubber, giving it strength and elasticity. This process is meticulously controlled by a system of activators and accelerators.</p>
+                        <div class="flowchart-container">
+                            <div class="flowchart-item">Raw Rubber Compound</div>
+                            <div class="flowchart-arrow">↓</div>
+                            <div class="flowchart-item">Add: Sulfur, ZnO, Accelerators</div>
+                             <div class="flowchart-arrow">↓</div>
+                            <div class="flowchart-item">Apply Heat (120-160°C) & Pressure</div>
+                             <div class="flowchart-arrow">↓</div>
+                             <div class="flowchart-item bg-[#00A0B0] text-white">Durable, Elastic Vulcanized Rubber</div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow-lg p-6">
+                         <h3 class="text-2xl font-bold text-[#00A0B0] mb-4">Protection & Processing</h3>
+                        <p class="mb-4">A host of other chemicals protect the tire and aid in manufacturing.</p>
+                        <div class="space-y-4">
+                            <div>
+                                <h4 class="font-bold text-lg">🛡️ Anti-Aging Agents</h4>
+                                <p class="text-sm text-gray-600">Indispensable for extending service life by protecting against heat, sunlight, oxygen, and ozone. Examples include antioxidants (TMQ, Hindered Phenols) and antiozonants (PPDs, Waxes).</p>
+                            </div>
+                             <div>
+                                <h4 class="font-bold text-lg">💧 Plasticizers & Processing Aids</h4>
+                                <p class="text-sm text-gray-600">Oils and resins that soften the rubber for easier processing. Tackifiers improve stickiness for assembly, while dispersants ensure even mixing of fillers.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-lg">🔗 Adhesion Promoters</h4>
+                                <p class="text-sm text-gray-600">Specialized agents (historically cobalt-based, now moving to non-cobalt alternatives) that ensure a durable bond between the rubber and steel cord reinforcements.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+             <section id="trends">
+                <div class="bg-white rounded-lg shadow-lg p-6 md:p-8">
+                     <h2 class="text-3xl font-bold text-[#6A4A3C] mb-6 text-center">The Road Ahead: Innovation & Sustainability</h2>
+                     <p class="text-lg text-center max-w-3xl mx-auto mb-8">The field of tire material science is dynamic, continuously evolving in response to technological advancements, consumer demands, and increasing regulatory pressures. The future is focused on performance, safety, and environmental stewardship.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                        <div class="bg-gray-100 p-6 rounded-lg">
+                            <div class="text-5xl mb-3">🌿</div>
+                            <h3 class="text-xl font-bold mb-2">Sustainable Materials</h3>
+                            <p class="text-gray-600">Increased use of silica from renewable sources like rice husks and development of alternative natural rubber sources (guayule, TKS dandelion).</p>
+                        </div>
+                         <div class="bg-gray-100 p-6 rounded-lg">
+                            <div class="text-5xl mb-3">🧪</div>
+                            <h3 class="text-xl font-bold mb-2">Safer Chemistry</h3>
+                            <p class="text-gray-600">Transitioning away from potentially hazardous materials, such as replacing traditional cobalt-based adhesion promoters with safer, non-cobalt alternatives.</p>
+                        </div>
+                         <div class="bg-gray-100 p-6 rounded-lg">
+                            <div class="text-5xl mb-3">🚀</div>
+                            <h3 class="text-xl font-bold mb-2">Performance Optimization</h3>
+                            <p class="text-gray-600">Continued advancement of "green tires" to further enhance fuel efficiency, extend electric vehicle range, and improve safety-critical properties like wet grip.</p>
+                        </div>
+                    </div>
+                </div>
+             </section>
+
+        </main>
+    </div>
+
+<script>
+    function wrapLabels(label) {
+        const maxLineWidth = 16;
+        if (typeof label !== 'string') return label;
+
+        const words = label.split(' ');
+        let lines = [];
+        let currentLine = '';
+
+        words.forEach(word => {
+            if ((currentLine + ' ' + word).trim().length > maxLineWidth) {
+                lines.push(currentLine.trim());
+                currentLine = word;
+            } else {
+                currentLine = (currentLine + ' ' + word).trim();
+            }
+        });
+        if (currentLine) {
+            lines.push(currentLine.trim());
+        }
+        return lines.length > 1 ? lines : label;
+    }
+
+    const tooltipTitleCallback = (tooltipItems) => {
+        const item = tooltipItems[0];
+        let label = item.chart.data.labels[item.dataIndex];
+        return Array.isArray(label) ? label.join(' ') : label;
+    };
+
+    const sharedChartOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom',
+                labels: {
+                    font: {
+                        size: 14,
+                        family: 'Inter'
+                    }
+                }
+            },
+            tooltip: {
+                callbacks: {
+                    title: tooltipTitleCallback
+                },
+                backgroundColor: '#6A4A3C',
+                titleFont: { size: 16, weight: 'bold' },
+                bodyFont: { size: 14 },
+                padding: 12,
+                cornerRadius: 8
+            }
+        }
+    };
+
+    const energeticPlayfulPalette = ['#00A0B0', '#6A4A3C', '#CC333F', '#EB6841', '#EDC951'];
+
+    const compositionCtx = document.getElementById('compositionChart').getContext('2d');
+    const compositionData = {
+        labels: [
+            'Rubber (Natural & Synthetic)',
+            'Fillers (Carbon Black, Silica, etc.)',
+            'Reinforcing Materials (Steel, Textiles)',
+            'Plasticizers (Oils, Resins)',
+            'Vulcanization Chemicals',
+            'Anti-Aging & Other Chemicals'
+        ].map(wrapLabels),
+        datasets: [{
+            label: 'Composition by Weight',
+            data: [41, 30, 15, 6, 6, 2],
+            backgroundColor: energeticPlayfulPalette,
+            borderColor: '#ffffff',
+            borderWidth: 2,
+            hoverOffset: 4
+        }]
+    };
+    new Chart(compositionCtx, {
+        type: 'doughnut',
+        data: compositionData,
+        options: {
+            ...sharedChartOptions,
+            cutout: '60%'
+        }
+    });
+
+    const fillerCtx = document.getElementById('fillerChart').getContext('2d');
+    const fillerData = {
+        labels: ['Wet Grip', 'Rolling Resistance (Lower is Better)', 'Durability / Wear Resistance'].map(wrapLabels),
+        datasets: [
+            {
+                label: 'Carbon Black (Traditional)',
+                data: [65, 70, 90],
+                backgroundColor: '#6A4A3C',
+                borderColor: '#6A4A3C',
+                borderWidth: 1,
+                borderRadius: 5
+            },
+            {
+                label: 'Silica (Modern "Green")',
+                data: [95, 40, 85],
+                backgroundColor: '#00A0B0',
+                borderColor: '#00A0B0',
+                borderWidth: 1,
+                borderRadius: 5
+            }
+        ]
+    };
+     new Chart(fillerCtx, {
+        type: 'bar',
+        data: fillerData,
+        options: {
+            ...sharedChartOptions,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Relative Performance Score'
+                    }
+                }
+            },
+            plugins: {
+                ...sharedChartOptions.plugins,
+                title: {
+                    display: true,
+                    text: 'Filler Performance Comparison',
+                    font: { size: 18, weight: 'bold'},
+                    padding: { top: 10, bottom: 20 }
+                }
+            }
+        }
+    });
+</script>
+
+</body>
+</html>
