@@ -24,10 +24,10 @@
             color: #D97706;
             border-bottom-color: #D97706;
         }
-        .stat-card, .method-card, .fungus-card, .process-step, .challenge-item {
+        .stat-card, .method-card, .fungus-card, .process-step, .challenge-item, .section-card {
             transition: transform 0.3s, box-shadow 0.3s;
         }
-        .stat-card:hover, .method-card:hover, .fungus-card:hover {
+        .stat-card:hover, .method-card:hover, .fungus-card:hover, .section-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
@@ -139,44 +139,45 @@
             color: #00A0B0;
             line-height: 1;
         }
+        /* Styles from Tire Degradation Simulation Web App */
+        .simulation-container {
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 2rem;
+        }
+        .simulation-section-card {
+            background-color: #ffffff;
+            border-radius: 0.75rem; /* rounded-xl */
+            padding: 1.5rem; /* p-6 */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* shadow-md */
+        }
+        /* Specific adjustments to avoid clashes or improve appearance */
+        .simulation-section-card h2 {
+            font-size: 1.875rem; /* text-3xl */
+            font-weight: 600; /* font-semibold */
+            margin-bottom: 1rem; /* mb-4 */
+            color: #4f46e5; /* indigo-600 */
+        }
+        .simulation-container .btn {
+             background-color: #4f46e5; /* indigo-600 */
+             color: white;
+        }
+        .simulation-container .btn:hover {
+            background-color: #4338ca; /* indigo-700 */
+        }
+        .simulation-container table th {
+            background-color: #eef2f6; /* gray-100 */
+        }
+        .simulation-container canvas {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
     </style>
 </head>
 <body class="bg-[#FDFBF5] text-gray-800">
-
-    <!--
-    Infographic Narrative Plan:
-    1. The Problem (Fungal Degradation): High-impact introduction to the tire waste problem with key stats.
-    2. Solutions Hub (Fungal Degradation): Interactive module comparing conventional recycling methods against the fungal approach.
-    3. Fungal Heroes (Fungal Degradation): Deep dive into the 'Fungal Heroes' (*Penicillium* & *Aspergillus*) with an interactive chart.
-    4. How It Works (Fungal Degradation): Visually animated, step-by-step breakdown of the degradation mechanism.
-    5. Future Prospects (Fungal Degradation): Forward-looking section with tabbed content for enhancements, valorization, and challenges.
-    6. Tire Chemical Anatomy: Deep dive into tire composition, problem statement of complexity, proposed biosphere solution, and enhancements to the solution. (New section)
-    7. Elastomers (Chemical Anatomy): Compare Natural vs. Synthetic rubbers.
-    8. Reinforcement (Chemical Anatomy): Explain steel/textile roles. Visualize Bias vs. Radial ply structure.
-    9. Fillers (Chemical Anatomy): Pit Carbon Black against Silica.
-    10. Chemical Additives (Chemical Anatomy): Detail the chemical systems, visualize vulcanization process.
-    11. Future Trends (Chemical Anatomy): Conclude with sustainability and innovation themes.
-
-    Visualization & Content Choices (Fungal Degradation Sections):
-    - The Problem: Dynamic counters (JS) to inform and create impact.
-    - Solutions Comparison: Interactive cards (HTML/CSS/JS) to compare multiple facets (cost, ROI, pros/cons).
-    - Fungal Performance: Bar Chart (Chart.js) to quantitatively compare degradation efficiencies.
-    - Degradation Process: Vertical, animated-on-scroll process flow (HTML/CSS/JS).
-    - Future Prospects: Tabbed and accordion layouts (JS) for dense information.
-
-    Visualization & Content Choices (Chemical Anatomy Sections):
-    - Overall Composition: Donut Chart (Chart.js). Goal: Compare. Justification: Best for showing parts-of-a-whole composition. No SVG.
-    - Rubber Properties: Grouped Bar Chart (Chart.js). Goal: Compare. Justification: Ideal for direct comparison of categories across multiple metrics. No SVG.
-    - Ply Structure: HTML/CSS Diagram. Goal: Organize/Explain. Justification: Required method to show structural concepts without SVG/Mermaid. No SVG. No Mermaid JS.
-    - Filler Performance: Grouped Bar Chart (Chart.js). Goal: Compare. Justification: Best for side-by-side comparison of two items. No SVG.
-    - Vulcanization Process: HTML/CSS Flowchart. Goal: Organize/Process. Justification: Visualizes a sequence effectively without banned libraries. No SVG. No Mermaid JS.
-    - Additives Table: HTML Table. Goal: Organize. Justification: Optimal for presenting detailed, structured data. No SVG.
-    - Icons: Unicode characters. Goal: Inform. Justification: Simple, effective visual cues without using image files or SVG.
-
-    Color Palette: Earthy Harmony (Main Page: #FDFBF5, #4A4A4A, #D97706, #4CAF50, #8BC34A, #FFC107, #FBC02D, #EF5350, #F44336). Energetic & Playful (Chemical Anatomy Sections: #00A0B0, #6A4A3C, #CC333F, #EB6841, #EDC951).
-
-    CONFIRMATION: NEITHER SVG graphics nor Mermaid JS were used anywhere in this output.
-    -->
 
     <header class="bg-[#FDFBF5]/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
         <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
@@ -187,6 +188,7 @@
                 <a href="#fungi" class="nav-link px-2 py-1">Fungal Heroes</a>
                 <a href="#process" class="nav-link px-2 py-1">How It Works</a>
                 <a href="#future" class="nav-link px-2 py-1">Future Prospects</a>
+                <a href="#simulation" class="nav-link px-2 py-1">Degradation Simulation</a>
                 <a href="#tire-chemistry-deep-dive" class="nav-link px-2 py-1">Tire Chemistry Deep Dive</a>
             </div>
             <button id="mobile-menu-button" class="md:hidden focus:outline-none">
@@ -199,6 +201,7 @@
             <a href="#fungi" class="block text-center py-2 px-4 text-sm hover:bg-green-50">Fungal Heroes</a>
             <a href="#process" class="block text-center py-2 px-4 text-sm hover:bg-green-50">How It Works</a>
             <a href="#future" class="block text-center py-2 px-4 text-sm hover:bg-green-50">Future Prospects</a>
+            <a href="#simulation" class="block text-center py-2 px-4 text-sm hover:bg-green-50">Degradation Simulation</a>
             <a href="#tire-chemistry-deep-dive" class="block text-center py-2 px-4 text-sm hover:bg-green-50">Tire Chemistry Deep Dive</a>
         </div>
     </header>
@@ -219,7 +222,7 @@
                     <h3 class="text-xl font-semibold text-gray-700">Years to Decompose</h3>
                     <p class="text-gray-500 mt-2">In landfills, tires can persist for up to 2,000 years, posing a long-term environmental burden.</p>
                 </div>
-                <div class="stat-card bg-white p-6 rounded-lg shadow-md border-t-4 border-amber-600 fade-in">
+                <div class="stat-card bg-white p-6 rounded-lg shadow-md border-t-4 border-red-600 fade-in">
                     <div class="text-4xl md:text-5xl font-bold text-red-600 mb-2">6PPD-Quinone</div>
                     <h3 class="text-xl font-semibold text-gray-700">A Silent Toxin</h3>
                     <p class="text-gray-500 mt-2">A tire preservative byproduct that is highly toxic to aquatic life, demonstrating the chemical threat from tire wear.</p>
@@ -324,7 +327,69 @@
             </div>
         </section>
 
-        <!-- New Section: Tire Chemical Anatomy Deep Dive -->
+        <!-- New Section: Tire Degradation Simulation -->
+        <section id="simulation" class="py-16 md:py-24 bg-blue-50/50 rounded-xl my-12 scroll-mt-20">
+            <div class="simulation-container">
+                <h1 class="text-4xl font-bold text-center mb-10 text-gray-800">Tire Degradation Simulation</h1>
+
+                <!-- Simulation Controls -->
+                <div class="simulation-section-card mb-8">
+                    <h2 class="text-2xl font-semibold mb-4 text-gray-700">Simulation Controls</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="timeMaxDays" class="block text-sm font-medium text-gray-700">Simulation Duration (Days)</label>
+                            <input type="number" id="timeMaxDays" value="365" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2">
+                        </div>
+                        <div>
+                            <label for="numTimeSteps" class="block text-sm font-medium text-gray-700">Number of Time Steps</label>
+                            <input type="number" id="numTimeSteps" value="1000" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2">
+                        </div>
+                    </div>
+                    <button id="runSimulationBtn" class="btn mt-6 w-full">Run Simulation</button>
+                    <p class="text-sm text-gray-500 mt-4">
+                        Note: This simulation uses a basic Euler's method for solving differential equations. For high accuracy or very stiff systems, more advanced numerical solvers are recommended. The parameters are hypothetical; adjust them in the JavaScript code for different scenarios.
+                    </p>
+                </div>
+
+                <!-- Initial Conditions and Parameters Table -->
+                <div class="simulation-section-card mb-8">
+                    <h2 class="text-2xl font-semibold mb-4 text-gray-700">Initial Conditions & Parameters</h2>
+                    <div id="parametersTable" class="overflow-x-auto">
+                        <!-- Parameters table will be generated here by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                    <div class="simulation-section-card">
+                        <h2 class="text-2xl font-semibold mb-4 text-gray-700">Component Degradation</h2>
+                        <canvas id="componentChart"></canvas>
+                    </div>
+                    <div class="simulation-section-card">
+                        <h2 class="text-2xl font-semibold mb-4 text-gray-700">Microbial Biomass Growth</h2>
+                        <canvas id="microbeChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Degradation Times -->
+                <div class="simulation-section-card mb-8">
+                    <h2 class="text-2xl font-semibold mb-4 text-gray-700">Time to 95% Degradation</h2>
+                    <div id="degradationTimes" class="text-lg font-medium text-gray-800">
+                        <!-- Degradation times will be displayed here -->
+                    </div>
+                </div>
+
+                <!-- Animation Section -->
+                <div class="simulation-section-card">
+                    <h2 class="text-2xl font-semibold mb-4 text-gray-700">Component Degradation Animation</h2>
+                    <div class="animation-container">
+                        <canvas id="animationChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Existing Section: Tire Chemical Anatomy Deep Dive -->
         <section id="tire-chemistry-deep-dive" class="py-16 md:py-24 scroll-mt-20">
             <div class="text-center mb-12">
                 <h1 class="text-4xl md:text-6xl font-black text-[#00A0B0] mb-4">The Chemical Anatomy of a Modern Tire</h1>
@@ -401,303 +466,178 @@
 
                     <h3 class="text-2xl font-bold text-[#EB6841] mb-3">Optimizing Environmental Controls & System Design</h3>
                     <ul class="list-disc list-inside space-y-2 text-gray-700 mb-6">
-                        <li><span class="font-bold">Controlled Bioreactors:</span> Develop specialized bioreactor designs (e.g., agitated tanks, trickling filters, or even solid-state bioreactors) that can maintain optimal conditions (temperature, pH, oxygen levels, moisture) for the diverse microbial consortia to thrive and effectively degrade whole tires.</li>
-                        <li><span class="font-bold">Pre-treatment for Efficiency:</span> Consider initial mechanical pre-treatment (e.g., shredding, cryo-grinding) of tires to increase surface area, reduce physical barriers, and accelerate microbial access to internal components.</li>
-                        <li><span class="font-bold">Real-time Monitoring & Feedback:</span> Integrate advanced sensors (e.g., for pH, dissolved oxygen, nutrient levels, microbial population densities, specific degradation markers) with the mathematical models. This allows for real-time adjustments to environmental parameters and nutrient dosing, optimizing degradation rates and preventing imbalances.</li>
-                        <li><span class="font-bold">Robust Containment Strategies:</span> Implement multi-layered containment systems (e.g., sealed bioreactors, HEPA filtration for air, advanced effluent treatment) to prevent any unintended release of engineered or highly active microbial species into the environment.</li>
-                    </ul>
-
-                    <h3 class="text-2xl font-bold text-[#EDC951] mb-3">Scalability, Safety, and Long-Term Viability</h3>
-                    <ul class="list-disc list-inside space-y-2 text-gray-700">
-                        <li><span class="font-bold">Genetic Stability & Biocontainment:</span> Employ strategies like **auxotrophy** (requiring specific nutrients not found in the environment) or **suicide genes** (activated upon escape or specific environmental triggers) to ensure the biocontainment and auto-termination of engineered microbes outside the controlled bioreactor environment.</li>
-                        <li><span class="font-bold">Waste Stream Valorization:</span> Explore the potential to recover valuable raw materials (e.g., metals, specific organic compounds) or even bioenergy from the degradation process, moving beyond simple disposal to a circular economy model.</li>
-                        <li><span class="font-bold">Lifecycle Assessment:</span> Conduct a comprehensive lifecycle assessment to evaluate the environmental footprint of this biosphere-based solution compared to current tire recycling methods, ensuring it truly offers a net environmental benefit.</li>
+                        <li><span class="font-bold">Controlled Bioreactors:</span> Develop specialized bioreactor designs (e.g., agitated bioreactors for even distribution, trickle-bed bioreactors for robust biofilm formation) to optimize mass transfer and environmental conditions.</li>
+                        <li><span class="font-bold">Nutrient Recycling & Water Management:</span> Implement systems for recycling water and nutrients within the bioreactor to minimize resource consumption and waste generation. This is crucial for long-term sustainability.</li>
+                        <li><span class="font-bold">Real-time Monitoring & Feedback:</span> Integrate sensors for parameters like pH, temperature, oxygen levels, and metabolite concentrations. Use these data with the mathematical model to establish a feedback control system for optimal microbial activity.</li>
+                        <li><span class="font-bold">Scale-up & Economic Viability:</span> Conduct pilot-scale studies to evaluate the economic feasibility and scalability of the process, ensuring it can transition from laboratory to industrial application efficiently.</li>
                     </ul>
                 </div>
             </section>
-
-            <section id="chemical-rubbers">
-                 <h2 class="text-3xl font-bold text-[#6A4A3C] mb-4 text-center">The Polymeric Backbone: Natural & Synthetic Rubbers</h2>
-                 <p class="text-lg text-center max-w-3xl mx-auto mb-8">The foundation of any tire is its elastomers. The strategic blending of natural rubber's resilience with the tailored properties of various synthetic rubbers is a core aspect of advanced materials engineering in the tire industry.</p>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div class="bg-white rounded-lg shadow-lg p-6">
-                        <h3 class="text-2xl font-bold text-[#00A0B0] mb-3">🌳 Natural Rubber (Polyisoprene)</h3>
-                        <p class="mb-4">Sourced from the latex of the *Hevea brasiliensis* tree, natural rubber is prized for its excellent elasticity, low heat buildup, and resistance to cuts and tears. It is a vital component in all tires, especially for heavy-duty applications.</p>
-                        <div class="bg-red-100 border-l-4 border-[#CC333F] text-red-800 p-4 rounded-r-lg">
-                            <p class="font-bold">Supply Chain Vulnerability</p>
-                            <p>Over <span class="text-2xl font-black text-[#CC333F]">90%</span> of the world's natural rubber originates from Southeast Asia, creating a significant supply risk due to potential disease outbreaks in genetically limited tree populations.</p>
-                        </div>
-                    </div>
-                    <div class="bg-white rounded-lg shadow-lg p-6">
-                        <h3 class="text-2xl font-bold text-[#EB6841] mb-3">🔬 Synthetic Rubbers</h3>
-                        <p class="mb-4">Manufactured from petrochemicals, synthetic rubbers like SBR and Butadiene Rubber (BR) allow engineers to precisely tailor properties like heat resistance, durability, and tread wear for specific applications.</p>
-                        <ul class="list-disc list-inside space-y-1 text-gray-700">
-                            <li><span class="font-semibold">Styrene-Butadiene Rubber (SBR):</span> Versatile tread material.</li>
-                             <li><span class="font-semibold">Butadiene Rubber (BR):</span> High abrasion resistance for sidewalls.</li>
-                            <li><span class="font-semibold">Butyl Rubber (BIIR):</span> High gas impermeability for inner liners.</li>
-                        </ul>
-                    </div>
-                </div>
-            </section>
-
-            <section id="chemical-reinforcement">
-                <div class="bg-white rounded-lg shadow-lg p-6 md:p-8">
-                    <h2 class="text-3xl font-bold text-[#6A4A3C] mb-4 text-center">Structural Reinforcement: Steel & Textiles</h2>
-                    <p class="text-lg text-center max-w-3xl mx-auto mb-8">A tire's structural integrity is provided by non-elastomeric materials. The arrangement of these reinforcing cords, known as the ply, is a defining feature of tire design, profoundly influencing vehicle dynamics, fuel economy, and passenger safety.</p>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-                        <div>
-                            <h3 class="text-2xl font-bold text-[#00A0B0] mb-2">Bias-Ply vs. Radial-Ply</h3>
-                            <p class="mb-4"><span class="font-bold text-[#CC333F]">Bias-Ply:</span> Cords are laid at opposing angles (~50°). This traditional construction is durable but generates more heat and has higher rolling resistance.</p>
-                             <p><span class="font-bold text-[#00A0B0]">Radial-Ply:</span> Cords are laid nearly perpendicular to the tire's axis (~90°), with a steel belt for reinforcement. This modern design offers superior steering, lower rolling resistance, and significantly longer mileage.</p>
-                        </div>
-                        <div class="ply-diagram-container">
-                            <div class="text-center">
-                                <div class="ply-diagram bias">
-                                    <div class="ply-line"></div>
-                                    <div class="ply-line"></div>
-                                </div>
-                                <p class="mt-2 font-semibold">Bias-Ply</p>
-                            </div>
-                            <div class="text-center">
-                               <div class="ply-diagram radial">
-                                    <div class="ply-line"></div>
-                                </div>
-                                <p class="mt-2 font-semibold">Radial-Ply</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-             <section id="chemical-fillers">
-                <div class="bg-white rounded-lg shadow-lg p-6 md:p-8">
-                    <h2 class="text-3xl font-bold text-[#6A4A3C] mb-4 text-center">The Performance Revolution: Fillers</h2>
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-                        <div>
-                             <p class="text-lg mb-4">Particulate fillers are critical for enhancing rubber's properties. The industry shift from traditional Carbon Black to advanced Silica fillers marks a profound transformation in tire technology, often called the "green tire" revolution.</p>
-                             <p class="text-md text-gray-600">This transition is driven by silica's unique ability to simultaneously enhance wet grip (a key safety feature) and reduce rolling resistance (improving fuel efficiency), demonstrating a move toward multi-functional, sustainable materials.</p>
-                             <div class="mt-4 bg-green-100 border-l-4 border-green-500 text-green-800 p-4 rounded-r-lg">
-                                <p><span class="font-bold">Sustainable Sourcing:</span> Increasingly, silica is derived from rice husk ashes, an energy-efficient and renewable by-product of agriculture.</p>
-                            </div>
-                        </div>
-                         <div class="chemical-chart-container w-full max-w-lg">
-                            <canvas id="fillerChartChem"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-             <section id="chemical-additives">
-                <h2 class="text-3xl font-bold text-[#6A4A3C] mb-4 text-center">The Chemical Toolkit: A Symphony of Additives</h2>
-                 <p class="text-lg text-center max-w-3xl mx-auto mb-8">A sophisticated chemical system is required to transform raw rubber into a durable, high-performance product capable of withstanding extreme operating conditions and environmental exposure over extended periods.</p>
-
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <div class="bg-white rounded-lg shadow-lg p-6">
-                        <h3 class="text-2xl font-bold text-[#EB6841] mb-4">The Vulcanization Process</h3>
-                        <p class="mb-6">Vulcanization is the crucial chemical process, typically using sulfur, that creates a stable, net-like structure in rubber, giving it strength and elasticity. This process is meticulously controlled by a system of activators and accelerators.</p>
-                        <div class="flowchart-container">
-                            <div class="flowchart-item">Raw Rubber Compound</div>
-                            <div class="flowchart-arrow">↓</div>
-                            <div class="flowchart-item">Add: Sulfur, ZnO, Accelerators</div>
-                             <div class="flowchart-arrow">↓</div>
-                            <div class="flowchart-item">Apply Heat (120-160°C) & Pressure</div>
-                             <div class="flowchart-arrow">↓</div>
-                             <div class="flowchart-item bg-[#00A0B0] text-white">Durable, Elastic Vulcanized Rubber</div>
-                        </div>
-                    </div>
-
-                    <div class="bg-white rounded-lg shadow-lg p-6">
-                         <h3 class="text-2xl font-bold text-[#00A0B0] mb-4">Protection & Processing</h3>
-                        <p class="mb-4">A host of other chemicals protect the tire and aid in manufacturing.</p>
-                        <div class="space-y-4">
-                            <div>
-                                <h4 class="font-bold text-lg">🛡️ Anti-Aging Agents</h4>
-                                <p class="text-sm text-gray-600">Indispensable for extending service life by protecting against heat, sunlight, oxygen, and ozone. Examples include antioxidants (TMQ, Hindered Phenols) and antiozonants (PPDs, Waxes).</p>
-                            </div>
-                             <div>
-                                <h4 class="font-bold text-lg">💧 Plasticizers & Processing Aids</h4>
-                                <p class="text-sm text-gray-600">Oils and resins that soften the rubber for easier processing. Tackifiers improve stickiness for assembly, while dispersants ensure even mixing of fillers.</p>
-                            </div>
-                            <div>
-                                <h4 class="font-bold text-lg">🔗 Adhesion Promoters</h4>
-                                <p class="text-sm text-gray-600">Specialized agents (historically cobalt-based, now moving to non-cobalt alternatives) that ensure a durable bond between the rubber and steel cord reinforcements.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-             <section id="chemical-trends">
-                <div class="bg-white rounded-lg shadow-lg p-6 md:p-8">
-                     <h2 class="text-3xl font-bold text-[#6A4A3C] mb-6 text-center">The Road Ahead: Innovation & Sustainability</h2>
-                     <p class="text-lg text-center max-w-3xl mx-auto mb-8">The field of tire material science is dynamic, continuously evolving in response to technological advancements, consumer demands, and increasing regulatory pressures. The future is focused on performance, safety, and environmental stewardship.</p>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
-                        <div class="bg-gray-100 p-6 rounded-lg">
-                            <div class="text-5xl mb-3">🌿</div>
-                            <h3 class="text-xl font-bold mb-2">Sustainable Materials</h3>
-                            <p class="text-gray-600">Increased use of silica from renewable sources like rice husks and development of alternative natural rubber sources (guayule, TKS dandelion).</p>
-                        </div>
-                         <div class="bg-gray-100 p-6 rounded-lg">
-                            <div class="text-5xl mb-3">🧪</div>
-                            <h3 class="text-xl font-bold mb-2">Safer Chemistry</h3>
-                            <p class="text-gray-600">Transitioning away from potentially hazardous materials, such as replacing traditional cobalt-based adhesion promoters with safer, non-cobalt alternatives.</p>
-                        </div>
-                         <div class="bg-gray-100 p-6 rounded-lg">
-                            <div class="text-5xl mb-3">🚀</div>
-                            <h3 class="text-xl font-bold mb-2">Performance Optimization</h3>
-                            <p class="text-gray-600">Continued advancement of "green tires" to further enhance fuel efficiency, extend electric vehicle range, and improve safety-critical properties like wet grip.</p>
-                        </div>
-                    </div>
-                </div>
-             </section>
-
         </section>
 
     </main>
 
-    <footer class="bg-green-800 text-white mt-24">
-        <div class="container mx-auto px-6 py-8 text-center">
-            <p>Integrated Infographic: Fungal Degradation & Tire Chemical Anatomy.</p>
-            <p class="text-sm text-green-200 mt-2">Content synthesized from comprehensive reviews on tire composition and bioremediation.</p>
-        </div>
-    </footer>
-
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        // --- General Infographic JS (Preserved) ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Mobile Menu Toggle
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
 
-            // Fungal Degradation Page Scripts
-            const stats = {
-                tiresAnnually: 1.5,
-                landfillYears: 2000,
-            };
+            // Nav Link Active State (simple example, could be more robust with IntersectionObserver)
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+                    mobileMenu.classList.add('hidden'); // Close mobile menu on click
+                });
+            });
 
-            function animateValue(id, start, end, duration, decimals = 0, suffix = '') {
+            // Stat Counters
+            const animateCounter = (id, target, duration, isBillion = false, isYears = false) => {
                 const obj = document.getElementById(id);
-                let startTimestamp = null;
-                const step = (timestamp) => {
-                    if (!startTimestamp) startTimestamp = timestamp;
-                    const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-                    const value = progress * (end - start) + start;
-                    obj.innerHTML = value.toFixed(decimals).replace(/\B(?=(\d{3})+(?!\d))/g, ",") + suffix;
+                if (!obj) return;
+                let start = 0;
+                let startTime = null;
+
+                const step = (currentTime) => {
+                    if (!startTime) startTime = currentTime;
+                    const progress = Math.min((currentTime - startTime) / duration, 1);
+                    const value = Math.floor(progress * target);
+                    if (isBillion) {
+                        obj.innerHTML = value + 'B';
+                    } else if (isYears) {
+                        obj.innerHTML = value + '+';
+                    } else {
+                        obj.innerHTML = value;
+                    }
+
                     if (progress < 1) {
-                        window.requestAnimationFrame(step);
+                        requestAnimationFrame(step);
                     }
                 };
-                window.requestAnimationFrame(step);
-            }
+                requestAnimationFrame(step);
+            };
 
-            const methodsData = {
-                fungal: {
-                    title: '🍄 Fungal Bioremediation',
-                    description: 'Utilizes fungi like *Penicillium* and *Aspergillus* to naturally break down rubber polymers. This eco-friendly process operates at ambient temperatures, converting waste into biomass, CO₂, and water.',
-                    cost: 'Low (potentially)',
-                    scalability: 'Low (currently R&D)',
-                    pros: ['Eco-friendly, low energy use', 'Potential for valorization into new products', 'Can detoxify harmful chemicals'],
-                    cons: ['Very slow degradation rates', 'Not yet proven at industrial scale', 'Efficiency varies by strain and conditions']
-                },
-                mechanical: {
-                    title: '⚙️ Mechanical Grinding',
-                    description: 'Physically shreds tires into "crumb rubber". It is the most common and established method, but the process damages rubber polymers, limiting reuse in high-value products.',
-                    cost: '$0.10 - $0.30 / kg',
-                    scalability: 'High',
-                    pros: ['Low cost, simple process', 'Established market for crumb rubber'],
-                    cons: ['Low-value output', 'High energy consumption', 'Does not address chemical toxicity']
-                },
-                pyrolysis: {
-                    title: '🔥 Pyrolysis',
-                    description: 'Thermally decomposes tires in an oxygen-free environment, yielding oil, gas, and carbon black. This method recovers energy but is energy-intensive and can produce toxic emissions.',
-                    cost: '$0.50 - $1.00 / kg',
-                    scalability: 'Medium',
-                    pros: ['Recovers energy and materials', 'Reduces landfill volume significantly'],
-                    cons: ['High energy requirements', 'Potential for toxic air pollution', 'Quality of byproducts can be inconsistent']
-                },
-                chemical: {
-                    title: '🧪 Chemical Devulcanization',
-                    description: 'Uses chemical agents to break the sulfur cross-links in vulcanized rubber, restoring its plasticity. This allows for a higher percentage of recycled content in new tires.',
-                    cost: '$0.80 - $1.50 / kg',
-                    scalability: 'High (emerging)',
-                    pros: ['Produces higher-quality recycled rubber', 'Allows for closed-loop recycling'],
-                    cons: ['Uses chemical solvents', 'Can be expensive', 'Potential for unwanted side reactions']
-                }
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        if (entry.target.id === 'problem') {
+                            animateCounter('tires-annually', 2, 2000, true);
+                            animateCounter('landfill-years', 2000, 2000, false, true);
+                        }
+                        document.querySelectorAll('.fade-in').forEach(el => {
+                            if (!el.classList.contains('visible')) {
+                                el.classList.add('visible');
+                            }
+                        });
+                    }
+                });
+            }, { threshold: 0.1 }); // Trigger when 10% of element is visible
+
+            observer.observe(document.getElementById('problem'));
+            observer.observe(document.getElementById('solutions'));
+            observer.observe(document.getElementById('fungi'));
+            observer.observe(document.getElementById('process'));
+            observer.observe(document.getElementById('future'));
+            observer.observe(document.getElementById('tire-chemistry-deep-dive'));
+            observer.observe(document.getElementById('simulation')); // Observe new simulation section
+
+            // Solutions Hub Method Details (Example Content)
+            const methodDetails = {
+                fungal: `
+                    <h3 class="text-2xl font-bold text-green-700 mb-3">🍄 Fungal Bioremediation</h3>
+                    <p class="text-gray-600 mb-2"><strong>Description:</strong> Utilizes specialized fungi to break down rubber polymers enzymatically.</p>
+                    <p class="text-gray-600 mb-2"><strong>Pros:</strong> Eco-friendly, low energy, potential for byproduct valorization, effective on natural rubber.</p>
+                    <p class="text-gray-600 mb-2"><strong>Cons:</strong> Slower process, less effective on synthetic rubbers/additives without optimization, scalability challenges, sensitivity to toxins.</p>
+                    <p class="text-gray-600"><strong>Cost & ROI:</strong> Low operational cost, high potential ROI if valuable byproducts are generated. Research-intensive upfront.</p>
+                `,
+                mechanical: `
+                    <h3 class="text-2xl font-bold text-gray-700 mb-3">⚙️ Mechanical Grinding</h3>
+                    <p class="text-gray-600 mb-2"><strong>Description:</strong> Tires are physically shredded, granulated, and ground into crumb rubber.</p>
+                    <p class="text-gray-600 mb-2"><strong>Pros:</strong> Established, relatively fast, produces reusable material (e.g., for playgrounds, asphalt).</p>
+                    <p class="text-gray-600 mb-2"><strong>Cons:</strong> High energy consumption, material quality varies, does not chemically alter rubber, limited applications for end product.</p>
+                    <p class="text-gray-600"><strong>Cost & ROI:</strong> Moderate capital and operational costs. Market for crumb rubber is established but can fluctuate.</p>
+                `,
+                pyrolysis: `
+                    <h3 class="text-2xl font-bold text-gray-700 mb-3">🔥 Pyrolysis</h3>
+                    <p class="text-gray-600 mb-2"><strong>Description:</strong> Thermal decomposition of tires in the absence of oxygen to produce oil, char, and gas.</p>
+                    <p class="text-gray-600 mb-2"><strong>Pros:</strong> Recovers valuable fuels and chemicals, reduces waste volume significantly.</p>
+                    <p class="text-gray-600 mb-2"><strong>Cons:</strong> High capital cost, potential for air emissions if not properly controlled, char quality can be inconsistent.</p>
+                    <p class="text-gray-600"><strong>Cost & ROI:</strong> High capital investment, ROI dependent on fuel/chemical market prices.</p>
+                `,
+                chemical: `
+                    <h3 class="text-2xl font-bold text-gray-700 mb-3">🧪 Chemical Devulcanization</h3>
+                    <p class="text-gray-600 mb-2"><strong>Description:</strong> Chemical processes break down sulfur crosslinks in vulcanized rubber, allowing it to be re-processed.</p>
+                    <p class="text-gray-600 mb-2"><strong>Pros:</strong> Recovers rubber with properties closer to virgin material, enables re-use in new tires or rubber products.</p>
+                    <p class="text-gray-600 mb-2"><strong>Cons:</strong> Often energy-intensive, uses harsh chemicals, difficult to completely break all crosslinks, product quality can vary.</p>
+                    <p class="text-gray-600"><strong>Cost & ROI:</strong> Moderate to high costs depending on specific process, potential for high ROI due to valuable recycled rubber.</p>
+                `
             };
 
             const methodButtons = document.querySelectorAll('.method-button');
-            const methodDetailsContainer = document.getElementById('method-details');
+            const methodDetailsDiv = document.getElementById('method-details');
 
-            function updateMethodDetails(method) {
-                const data = methodsData[method];
-                methodDetailsContainer.innerHTML = `
-                    <h3 class="text-3xl font-bold text-green-700 mb-4">${data.title}</h3>
-                    <p class="text-gray-600 mb-6">${data.description}</p>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                        <div><strong class="block text-gray-700">Est. Cost:</strong><span class="text-amber-700 font-semibold">${data.cost}</span></div>
-                        <div><strong class="block text-gray-700">Scalability:</strong><span class="text-amber-700 font-semibold">${data.scalability}</span></div>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <h4 class="font-bold text-green-600 mb-2">Pros</h4>
-                            <ul class="list-disc list-inside text-gray-600 space-y-1">${data.pros.map(p => `<li>${p}</li>`).join('')}</ul>
-                        </div>
-                        <div>
-                            <h4 class="font-bold text-red-600 mb-2">Cons</h4>
-                            <ul class="list-disc list-inside text-gray-600 space-y-1">${data.cons.map(c => `<li>${c}</li>`).join('')}</ul>
-                        </div>
-                    </div>
-                `;
-            }
+            // Set default method on load
+            methodButtons[0].classList.add('active');
+            methodDetailsDiv.innerHTML = methodDetails['fungal'];
 
             methodButtons.forEach(button => {
                 button.addEventListener('click', () => {
                     methodButtons.forEach(btn => btn.classList.remove('active'));
                     button.classList.add('active');
-                    updateMethodDetails(button.dataset.method);
+                    const method = button.dataset.method;
+                    methodDetailsDiv.innerHTML = methodDetails[method];
                 });
             });
 
-            const degradationData = {
-                labels: ['Penicillium chrysogenum', 'Aspergillus niger', 'A. niger', 'P. chrysogenum', 'Phlebia radiata', 'Trametes versicolor', 'Penicillium variabile'],
-                datasets: [{
-                    label: '% Weight Loss',
-                    data: [64.3, 60, 28.3, 40, 27.7, 7.5, 15],
-                    backgroundColor: 'rgba(34, 139, 34, 0.6)',
-                    borderColor: 'rgba(34, 139, 34, 1)',
-                    borderWidth: 1,
-                    hoverBackgroundColor: 'rgba(217, 119, 6, 0.8)',
-                    hoverBorderColor: 'rgba(217, 119, 6, 1)',
-                }]
-            };
-
-            const chartCtx = document.getElementById('degradationChart').getContext('2d');
-            new Chart(chartCtx, {
+            // Fungal Degradation Chart
+            const degCtx = document.getElementById('degradationChart').getContext('2d');
+            const degradationChart = new Chart(degCtx, {
                 type: 'bar',
-                data: degradationData,
+                data: {
+                    labels: ['P. chrysogenum (30 days)', 'A. niger (45 days)', 'Mixed Culture (60 days)', 'Other Fungi (90 days)'],
+                    datasets: [{
+                        label: '% Weight Loss',
+                        data: [25, 35, 45, 15], // Hypothetical data for illustration
+                        backgroundColor: [
+                            'rgba(76, 175, 80, 0.7)', // Green
+                            'rgba(139, 195, 74, 0.7)', // Light Green
+                            'rgba(255, 193, 7, 0.7)',  // Amber
+                            'rgba(251, 192, 45, 0.7)'  // Light Amber
+                        ],
+                        borderColor: [
+                            'rgba(76, 175, 80, 1)',
+                            'rgba(139, 195, 74, 1)',
+                            'rgba(255, 193, 7, 1)',
+                            'rgba(251, 192, 45, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     scales: {
                         y: {
                             beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: 'Weight Loss (%)'
-                            }
+                            title: { display: true, text: 'Degradation (%)' },
+                            max: 100
+                        },
+                        x: {
+                            title: { display: true, text: 'Fungal Strain & Timeframe' }
                         }
                     },
                     plugins: {
-                        legend: {
-                            display: false
-                        },
+                        legend: { display: false },
                         tooltip: {
                             callbacks: {
                                 label: function(context) {
-                                    let label = context.dataset.label || '';
-                                    if (label) {
-                                        label += ': ';
-                                    }
-                                    if (context.parsed.y !== null) {
-                                        label += context.parsed.y + '%';
-                                    }
-                                    return label;
+                                    return context.dataset.label + ': ' + context.parsed.y + '%';
                                 }
                             }
                         }
@@ -705,263 +645,512 @@
                 }
             });
 
-            const tabsData = {
-                valorization: {
-                    title: 'Valorization: From Waste to Worth',
-                    content: `
-                        <p class="text-gray-600 mb-6">The ultimate goal is not just disposal, but creating value. Fungal degradation opens pathways to a circular economy for tires.</p>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="bg-green-50 p-4 rounded-lg"><strong>Biopolymers:</strong> Fungi can convert rubber waste into new, biodegradable plastic-like materials for construction and other industries.</div>
-                            <div class="bg-green-50 p-4 rounded-lg"><strong>Asphalt Modifiers:</strong> Partially degraded rubber can be used as a superior additive in asphalt, improving road durability and reducing noise.</div>
-                            <div class="bg-green-50 p-4 rounded-lg"><strong>Valuable Enzymes:</strong> The enzymes produced by the fungi during degradation can themselves be harvested for other industrial applications.</div>
-                            <div class="bg-green-50 p-4 rounded-lg"><strong>Chemical Feedstocks:</strong> Research aims to guide the degradation process to produce specific high-value chemical precursors for manufacturing.</div>
-                        </div>
-                    `
-                },
-                enhancements: {
-                    title: 'Enhancements: Accelerating Nature',
-                    content: `
-                        <p class="text-gray-600 mb-6">To make fungal degradation viable at an industrial scale, researchers are exploring ways to boost its speed and efficiency.</p>
-                        <ul class="list-disc list-inside space-y-3 text-gray-600">
-                            <li><strong>Genetic Engineering (CRISPR):</strong> Modifying fungal DNA to over-express the most effective rubber-degrading enzymes, creating "super-strains".</li>
-                            <li><strong>Microbial Consortia:</strong> Combining different species of fungi and bacteria that work synergistically. One microbe might detoxify the rubber while another breaks down the polymer backbone.</li>
-                            <li><strong>Process Optimization:</strong> Fine-tuning environmental conditions like temperature, pH, and nutrients in bioreactors to maximize fungal activity.</li>
-                            <li><strong>Pre-treatment:</strong> Using an initial, mild physical or biological step to "soften up" the rubber, making it easier for the primary fungi to attack.</li>
-                        </ul>
-                    `
-                },
-                challenges: {
-                    title: 'Challenges on the Road Ahead',
-                    content: `
-                        <p class="text-gray-600 mb-6">Several hurdles must be overcome to transition this technology from the lab to widespread use. Click each item to learn more.</p>
-                        <div class="space-y-4" id="accordion">
-                            <div class="challenge-item border rounded-lg">
-                                <button class="accordion-header w-full flex justify-between items-center p-4 text-left font-semibold">
-                                    <span>Industrial Scalability</span><span>+</span>
-                                </button>
-                                <div class="accordion-content px-4 pb-4 text-gray-600">
-                                    <p>Moving from small lab flasks to large industrial bioreactors that can process tons of material is a major engineering challenge. Maintaining optimal conditions and ensuring consistent results at scale is difficult.</p>
-                                </div>
-                            </div>
-                            <div class="challenge-item border rounded-lg">
-                                <button class="accordion-header w-full flex justify-between items-center p-4 text-left font-semibold">
-                                    <span>Slow Degradation Rate</span><span>+</span>
-                                </button>
-                                <div class="accordion-content px-4 pb-4 text-gray-600">
-                                    <p>Even with enhancements, biological processes are inherently slower than mechanical or chemical ones. Reducing the time from months to weeks or days is a key research goal for economic viability.</p>
-                                </div>
-                            </div>
-                            <div class="challenge-item border rounded-lg">
-                                <button class="accordion-header w-full flex justify-between items-center p-4 text-left font-semibold">
-                                    <span>Economic Viability & Regulation</span><span>+</span>
-                                </button>
-                                <div class="accordion-content px-4 pb-4 text-gray-600">
-                                    <p>The final product must be cost-competitive with virgin materials or conventional recycled rubber. This requires not only efficient technology but also supportive government policies and incentives. Safety regulations for byproducts and genetically modified organisms must also be navigated.</p>
-                                </div>
-                            </div>
-                        </div>
-                    `
-                }
+            // Future Prospects Tabs
+            const tabContent = {
+                valorization: `
+                    <h3 class="text-2xl font-bold text-amber-600 mb-3">💰 Valorization: Turning Waste into Value</h3>
+                    <ul class="list-disc list-inside space-y-2 text-gray-700">
+                        <li><strong>Bio-oil Production:</strong> Fungal degradation can yield liquid fuels or chemical feedstocks.</li>
+                        <li><strong>Bio-fertilizers:</strong> The fungal biomass itself, rich in nutrients, can serve as a soil enhancer.</li>
+                        <li><strong>Carbon Black Recovery:</strong> Undegraded carbon black can be recovered for industrial use.</li>
+                        <li><strong>New Polymers:</strong> Possibility of synthesizing novel biopolymers from degraded rubber monomers.</li>
+                    </ul>
+                `,
+                enhancements: `
+                    <h3 class="text-2xl font-bold text-green-700 mb-3">🚀 Enhancements: Boosting Efficiency</h3>
+                    <ul class="list-disc list-inside space-y-2 text-gray-700">
+                        <li><strong>Genetic Engineering:</strong> Enhance fungal strains for higher enzymatic activity or broader substrate range.</li>
+                        <li><strong>Pre-treatment:</strong> Mechanical or chemical pre-treatments can accelerate fungal attack.</li>
+                        <li><strong>Co-culturing:</strong> Combining multiple fungal/bacterial species for synergistic degradation.</li>
+                        <li><strong>Optimized Conditions:</strong> Fine-tuning temperature, pH, and nutrient availability in bioreactors.</li>
+                    </ul>
+                `,
+                challenges: `
+                    <h3 class="text-2xl font-bold text-red-600 mb-3">🚧 Challenges: Hurdles to Overcome</h3>
+                    <ul class="list-disc list-inside space-y-2 text-gray-700">
+                        <li><strong>Process Speed:</strong> Fungal degradation can be slow compared to mechanical methods.</li>
+                        <li><strong>Synthetic Rubber Resistance:</strong> Many synthetic rubbers are more recalcitrant to biodegradation.</li>
+                        <li><strong>Toxicity:</strong> Heavy metals and toxic additives in tires can inhibit fungal growth.</li>
+                        <li><strong>Scalability:</strong> Scaling lab-based processes to industrial levels is complex and costly.</li>
+                    </ul>
+                `
             };
-
             const tabButtons = document.querySelectorAll('.tab-button');
-            const tabContentContainer = document.getElementById('tab-content');
+            const tabContentDiv = document.getElementById('tab-content');
 
-            function showTab(tabName) {
-                tabButtons.forEach(button => {
-                    if (button.dataset.tab === tabName) {
-                        button.classList.add('active');
-                    } else {
-                        button.classList.remove('active');
-                    }
-                });
-                tabContentContainer.innerHTML = tabsData[tabName].content;
-
-                // Re-attach accordion listeners for newly rendered content
-                if (tabName === 'challenges') {
-                    document.querySelectorAll('.accordion-header').forEach(header => {
-                        header.addEventListener('click', function() {
-                            const content = this.nextElementSibling;
-                            this.querySelector('span:last-child').textContent = content.style.maxHeight ? '+' : '-';
-                            content.style.maxHeight = content.style.maxHeight ? null : content.scrollHeight + "px";
-                        });
-                    });
-                }
-            }
-
-            // Set initial tab for Fungal Degradation page
-            showTab('valorization');
+            // Set default tab on load
+            tabButtons[0].classList.add('active');
+            tabContentDiv.innerHTML = tabContent['valorization'];
 
             tabButtons.forEach(button => {
-                button.addEventListener('click', () => showTab(button.dataset.tab));
+                button.addEventListener('click', () => {
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    const tab = button.dataset.tab;
+                    tabContentDiv.innerHTML = tabContent[tab];
+                });
             });
 
-            // Initial animations for Fungal Degradation page
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('visible');
-                        observer.unobserve(entry.target);
+            // Chemical Anatomy Charts (Placeholder for now)
+            const compositionCtx = document.getElementById('compositionChartChem').getContext('2d');
+            new Chart(compositionCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Rubber (Natural & Synthetic)', 'Carbon Black', 'Steel', 'Textile', 'Additives & ZnO', 'Sulfur'],
+                    datasets: [{
+                        data: [45, 25, 15, 5, 8, 2], // Example percentages
+                        backgroundColor: ['#00A0B0', '#6A4A3C', '#CC333F', '#EB6841', '#EDC951', '#4A4A4A'],
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'right' },
+                        title: { display: false }
                     }
-                });
-            }, { threshold: 0.1 });
-
-            document.querySelectorAll('.fade-in').forEach(element => {
-                observer.observe(element);
-            });
-
-            animateValue('tires-annually', 0, stats.tiresAnnually, 2000, 1, 'B');
-            animateValue('landfill-years', 0, stats.landfillYears, 2000);
-
-            // Chemical Anatomy Page Scripts (integrated)
-
-            function wrapLabels(label) {
-                const maxLineWidth = 16;
-                if (typeof label !== 'string') return label;
-
-                const words = label.split(' ');
-                let lines = [];
-                let currentLine = '';
-
-                words.forEach(word => {
-                    if ((currentLine + ' ' + word).trim().length > maxLineWidth) {
-                        lines.push(currentLine.trim());
-                        currentLine = word;
-                    } else {
-                        currentLine = (currentLine + ' ' + word).trim();
-                    }
-                });
-                if (currentLine) {
-                    lines.push(currentLine.trim());
                 }
-                return lines.length > 1 ? lines : label;
+            });
+
+            // --- TIRE DEGRADATION SIMULATION JS (Integrated) ---
+
+            // --- 1. Define Components and Parameters ---
+            const components = ['Natural Rubber', 'SBR', 'S', 'Steel', 'ZnO', 'Textile', 'Additives'];
+            const num_components = components.length;
+            const comp_indices = components.reduce((acc, name, i) => {
+                acc[name] = i;
+                return acc;
+            }, {});
+
+            // Initial conditions (all in kg, assuming 1 unit of tire is 1 kg)
+            // Adjust these based on typical tire composition (hypothetical values)
+            let C0_initial = [
+                0.30,  // Natural Rubber (NR) - e.g., 30% of tire
+                0.20,  // SBR - e.g., 20%
+                0.05,  // Sulfur (S) - e.g., 5%
+                0.15,  // Steel - e.g., 15%
+                0.03,  // ZnO - e.g., 3%
+                0.10,  // Textile - e.g., 10%
+                0.02   // Additives - e.g., 2%
+            ];
+
+            // Initial microbial biomass (kg) - very small initial inoculum
+            let M0_initial = [
+                1e-5,  // Microbe for NR
+                1e-5,  // Microbe for SBR
+                1e-6,  // Microbe for Sulfur
+                1e-8,  // Microbe for Steel (very low, or even 0 if assumed non-degradable by biological means)
+                1e-7,  // Microbe for ZnO
+                1e-7,  // Microbe for Textile
+                1e-6   // Microbe for Additives
+            ];
+
+            // --- Hypothetical Model Parameters ---
+            // Degradation rate constant for component j (beta_j, 1/(kg_microbe*day))
+            let beta_initial = [
+                0.5,   // NR: relatively high
+                0.4,   // SBR: relatively high
+                0.2,   // S: moderate
+                0.001, // Steel: very low (or 0 if effectively non-degradable biologically)
+                0.05,  // ZnO: low
+                0.01,  // Textile: very low
+                0.3    // Additives: moderate
+            ];
+
+            // Growth rate of microbe j (mu_j, 1/day)
+            let mu_initial = [
+                0.8,   // Microbe for NR
+                0.7,   // Microbe for SBR
+                0.5,   // Microbe for S
+                0.01,  // Microbe for Steel (slow growth if it even exists)
+                0.3,   // Microbe for ZnO
+                0.2,   // Microbe for Textile
+                0.6    // Microbe for Additives
+            ];
+
+            // Decay/death rate of microbe j (delta_j, 1/day)
+            let delta_initial = [
+                0.1,   // Microbe for NR
+                0.1,   // Microbe for SBR
+                0.08,  // Microbe for S
+                0.005, // Microbe for Steel
+                0.07,  // Microbe for ZnO
+                0.06,  // Microbe for Textile
+                0.09   // Microbe for Additives
+            ];
+
+            // Half-saturation constant for component j (K_j, kg)
+            let K_initial = [
+                0.01,  // NR
+                0.015, // SBR
+                0.005, // S
+                1.0,   // Steel (effectively very low affinity for steel)
+                0.02,  // ZnO
+                0.05,  // Textile
+                0.01   // Additives
+            ];
+
+            // Interaction coefficients from microbe i to microbe j (gamma_ij, 1/day)
+            let gamma_initial = Array(num_components).fill(0).map(() => Array(num_components).fill(0));
+            // Example interactions (you can customize these heavily)
+            // Format: gamma[affecting_microbe_index][affected_microbe_index]
+            gamma_initial[comp_indices['Natural Rubber']][comp_indices['SBR']] = 0.05;
+            gamma_initial[comp_indices['SBR']][comp_indices['Additives']] = 0.03;
+            gamma_initial[comp_indices['S']][comp_indices['NR']] = 0.02;
+            gamma_initial[comp_indices['Steel']][comp_indices['ZnO']] = -0.01;
+            gamma_initial[comp_indices['Additives']][comp_indices['SBR']] = -0.02;
+
+            // --- Display Initial Parameters ---
+            function displaySimulationParameters() {
+                const tableDiv = document.getElementById('parametersTable');
+                let html = `
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Component</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Initial C0 (kg)</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Initial M0 (kg)</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Beta (1/(kg*day))</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mu (1/day)</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Delta (1/day)</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">K (kg)</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                `;
+                components.forEach((comp_name, i) => {
+                    html += `
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${comp_name}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${C0_initial[i].toFixed(3)}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${M0_initial[i].toExponential(2)}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${beta_initial[i].toFixed(3)}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${mu_initial[i].toFixed(3)}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${delta_initial[i].toFixed(3)}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${K_initial[i].toFixed(3)}</td>
+                            </tr>
+                    `;
+                });
+                html += `
+                        </tbody>
+                    </table>
+                    <h3 class="text-xl font-semibold mt-6 mb-2 text-gray-700">Microbial Interaction Matrix (γ_ij)</h3>
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Affecting \\ Affected</th>
+                                ${components.map(c => `<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">${c}</th>`).join('')}
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            ${components.map((row_comp, i) => `
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${row_comp}</td>
+                                    ${components.map((col_comp, j) => `
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${gamma_initial[i][j].toFixed(3)}</td>
+                                    `).join('')}
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+                tableDiv.innerHTML = html;
             }
 
-            const tooltipTitleCallback = (tooltipItems) => {
-                const item = tooltipItems[0];
-                let label = item.chart.data.labels[item.dataIndex];
-                return Array.isArray(label) ? label.join(' ') : label;
-            };
+            // --- 2. Define the System of Differential Equations (Euler's Method) ---
+            function tire_degradation_model(y, t_step, dt, beta, mu, delta, K, gamma, num_components) {
+                let C = y.slice(0, num_components);
+                let M = y.slice(num_components);
 
-            const sharedChartOptionsChem = {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: {
-                            font: {
-                                size: 14,
-                                family: 'Inter'
-                            }
+                let dCdt = new Array(num_components).fill(0);
+                let dMdt = new Array(num_components).fill(0);
+
+                // Degradation Equations: dC_j/dt = -beta_j * M_j(t) * C_j(t)
+                for (let j = 0; j < num_components; j++) {
+                    dCdt[j] = -beta[j] * M[j] * C[j];
+                    // Prevent C from going negative
+                    if (C[j] + dCdt[j] * dt < 0) {
+                        dCdt[j] = -C[j] / dt;
+                    }
+                }
+
+                // Microbial Growth Equations
+                for (let j = 0; j < num_components; j++) {
+                    let growth_term = 0;
+                    if ((K[j] + C[j]) > 0) {
+                        growth_term = mu[j] * M[j] * (C[j] / (K[j] + C[j]));
+                    }
+                    
+                    let decay_term = delta[j] * M[j];
+                    
+                    let interaction_term = 0;
+                    for (let i = 0; i < num_components; i++) {
+                        if (i !== j) {
+                            interaction_term += gamma[i][j] * M[i];
                         }
+                    }
+                    
+                    dMdt[j] = growth_term - decay_term + interaction_term;
+
+                    // Prevent M from going negative
+                    if (M[j] + dMdt[j] * dt < 0) {
+                        dMdt[j] = -M[j] / dt;
+                    }
+                }
+
+                // Return derivatives (dY/dt)
+                return dCdt.concat(dMdt);
+            }
+
+            // Euler integrator function
+            function solveODE(y0, t_array, params) {
+                const { beta, mu, delta, K, gamma, num_components } = params;
+                const num_vars = y0.length;
+                const solution = [y0]; // Store initial state
+
+                for (let i = 0; i < t_array.length - 1; i++) {
+                    const dt = t_array[i+1] - t_array[i];
+                    const currentState = solution[i];
+                    const derivatives = tire_degradation_model(currentState, t_array[i], dt, beta, mu, delta, K, gamma, num_components);
+                    
+                    const nextState = currentState.map((val, idx) => {
+                        let newVal = val + derivatives[idx] * dt;
+                        // Ensure values don't go negative
+                        return Math.max(0, newVal);
+                    });
+                    solution.push(nextState);
+                }
+                return solution;
+            }
+
+            // --- Chart Initialization ---
+            let componentChart, microbeChart, animationChartInstance;
+            const colors = [
+                'rgb(255, 99, 132)',  // Red
+                'rgb(54, 162, 235)',  // Blue
+                'rgb(255, 205, 86)',  // Yellow
+                'rgb(75, 192, 192)',  // Green
+                'rgb(153, 102, 255)', // Purple
+                'rgb(255, 159, 64)',  // Orange
+                'rgb(201, 203, 207)'  // Gray
+            ];
+
+            function initializeSimulationCharts(t, C_results, M_results) {
+                const compCtx = document.getElementById('componentChart').getContext('2d');
+                if (componentChart) componentChart.destroy();
+                componentChart = new Chart(compCtx, {
+                    type: 'line',
+                    data: {
+                        labels: t.map(val => val.toFixed(0)), // x-axis labels
+                        datasets: components.map((comp_name, i) => ({
+                            label: comp_name,
+                            data: C_results.map(row => row[i]),
+                            borderColor: colors[i % colors.length],
+                            fill: false,
+                            tension: 0.1
+                        }))
                     },
-                    tooltip: {
-                        callbacks: {
-                            title: tooltipTitleCallback
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: { title: { display: true, text: 'Time (days)' } },
+                            y: { title: { display: true, text: 'Amount (kg)' }, beginAtZero: true }
                         },
-                        backgroundColor: '#6A4A3C',
-                        titleFont: { size: 16, weight: 'bold' },
-                        bodyFont: { size: 14 },
-                        padding: 12,
-                        cornerRadius: 8
+                        plugins: {
+                            legend: { position: 'top' },
+                            title: { display: false } // Title already in H2
+                        }
                     }
-                }
-            };
+                });
 
-            const energeticPlayfulPalette = ['#00A0B0', '#6A4A3C', '#CC333F', '#EB6841', '#EDC951'];
-
-            const compositionCtxChem = document.getElementById('compositionChartChem').getContext('2d');
-            const compositionDataChem = {
-                labels: [
-                    'Rubber (Natural & Synthetic)',
-                    'Fillers (Carbon Black, Silica, etc.)',
-                    'Reinforcing Materials (Steel, Textiles)',
-                    'Plasticizers (Oils, Resins)',
-                    'Vulcanization Chemicals',
-                    'Anti-Aging & Other Chemicals'
-                ].map(wrapLabels),
-                datasets: [{
-                    label: 'Composition by Weight',
-                    data: [41, 30, 15, 6, 6, 2],
-                    backgroundColor: energeticPlayfulPalette,
-                    borderColor: '#ffffff',
-                    borderWidth: 2,
-                    hoverOffset: 4
-                }]
-            };
-            new Chart(compositionCtxChem, {
-                type: 'doughnut',
-                data: compositionDataChem,
-                options: {
-                    ...sharedChartOptionsChem,
-                    cutout: '60%'
-                }
-            });
-
-            const fillerCtxChem = document.getElementById('fillerChartChem').getContext('2d');
-            const fillerDataChem = {
-                labels: ['Wet Grip', 'Rolling Resistance (Lower is Better)', 'Durability / Wear Resistance'].map(wrapLabels),
-                datasets: [
-                    {
-                        label: 'Carbon Black (Traditional)',
-                        data: [65, 70, 90],
-                        backgroundColor: '#6A4A3C',
-                        borderColor: '#6A4A3C',
-                        borderWidth: 1,
-                        borderRadius: 5
+                const microbeCtx = document.getElementById('microbeChart').getContext('2d');
+                if (microbeChart) microbeChart.destroy();
+                microbeChart = new Chart(microbeCtx, {
+                    type: 'line',
+                    data: {
+                        labels: t.map(val => val.toFixed(0)),
+                        datasets: components.map((comp_name, i) => ({
+                            label: `${comp_name}-degrader`,
+                            data: M_results.map(row => row[i]),
+                            borderColor: colors[i % colors.length],
+                            fill: false,
+                            tension: 0.1
+                        }))
                     },
-                    {
-                        label: 'Silica (Modern "Green")',
-                        data: [95, 40, 85],
-                        backgroundColor: '#00A0B0',
-                        borderColor: '#00A0B0',
-                        borderWidth: 1,
-                        borderRadius: 5
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: { title: { display: true, text: 'Time (days)' } },
+                            y: { 
+                                title: { display: true, text: 'Biomass (kg)' }, 
+                                type: 'logarithmic', // Log scale for microbial biomass
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function (value, index, values) {
+                                        if (value === 0.000000000000001) return '0'; // Handle very small log values for display
+                                        return value.toExponential(0); // Display in scientific notation
+                                    }
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: { position: 'top' },
+                            title: { display: false }
+                        }
                     }
-                ]
-            };
-             new Chart(fillerCtxChem, {
-                type: 'bar',
-                data: fillerDataChem,
-                options: {
-                    ...sharedChartOptionsChem,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: 'Relative Performance Score'
+                });
+            }
+
+            // --- Animation Chart ---
+            function initializeAnimationChart() {
+                const animCtx = document.getElementById('animationChart').getContext('2d');
+                if (animationChartInstance) animationChartInstance.destroy();
+                animationChartInstance = new Chart(animCtx, {
+                    type: 'line',
+                    data: {
+                        labels: [], // Labels will be added dynamically
+                        datasets: components.map((comp_name, i) => ({
+                            label: comp_name,
+                            data: [], // Data will be added dynamically
+                            borderColor: colors[i % colors.length],
+                            fill: false,
+                            tension: 0.1
+                        }))
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: { 
+                                title: { display: true, text: 'Time (days)' },
+                                min: 0,
+                                max: parseInt(document.getElementById('timeMaxDays').value)
+                            },
+                            y: { 
+                                title: { display: true, text: 'Amount (kg)' }, 
+                                beginAtZero: true,
+                                max: Math.max(...C0_initial) * 1.1 // Max initial amount + buffer
+                            }
+                        },
+                        plugins: {
+                            legend: { position: 'top' },
+                            title: { display: false }
+                        },
+                        animation: false // Disable Chart.js built-in animation for manual updates
+                    }
+                });
+            }
+
+            let animationFrameId;
+            let currentAnimationFrame = 0;
+            let animationData = { t: [], C_results: [] };
+
+            function animateDegradation(t_full, C_results_full) {
+                if (animationFrameId) {
+                    cancelAnimationFrame(animationFrameId);
+                }
+
+                animationData = { t: [], C_results: Array(C_results_full[0].length).fill(0).map(() => []) };
+                currentAnimationFrame = 0;
+                const animationInterval = 100; // Update every 100ms
+                const framesPerUpdate = Math.max(1, Math.floor(t_full.length / (200 * (t_full.length / 1000)))); // Adjust speed based on total steps
+
+                initializeAnimationChart();
+
+                function updateFrame() {
+                    if (currentAnimationFrame < t_full.length) {
+                        const frameToProcess = Math.min(currentAnimationFrame + framesPerUpdate, t_full.length);
+                        for (let i = currentAnimationFrame; i < frameToProcess; i++) {
+                            animationData.t.push(t_full[i]);
+                            animationChartInstance.data.labels = animationData.t.map(val => val.toFixed(0)); // Update x-axis labels
+                            for (let j = 0; j < num_components; j++) {
+                                animationChartInstance.data.datasets[j].data.push(C_results_full[i][j]);
                             }
                         }
-                    },
-                    plugins: {
-                        ...sharedChartOptionsChem.plugins,
-                        title: {
-                            display: true,
-                            text: 'Filler Performance Comparison',
-                            font: { size: 18, weight: 'bold'},
-                            padding: { top: 10, bottom: 20 }
-                        }
+                        animationChartInstance.update();
+                        currentAnimationFrame = frameToProcess;
+                        animationFrameId = requestAnimationFrame(updateFrame);
                     }
                 }
-            });
+                animationFrameId = requestAnimationFrame(updateFrame);
+            }
 
-            // Mobile menu toggle
-            const mobileMenuButton = document.getElementById('mobile-menu-button');
-            const mobileMenu = document.getElementById('mobile-menu');
-            mobileMenuButton.addEventListener('click', () => {
-                mobileMenu.classList.toggle('hidden');
-            });
-            // Hide mobile menu when a link is clicked
-            mobileMenu.querySelectorAll('a').forEach(link => {
-                link.addEventListener('click', () => {
-                    mobileMenu.classList.add('hidden');
+            // --- Main Simulation Function ---
+            function runSimulation() {
+                const timeMaxDays = parseInt(document.getElementById('timeMaxDays').value);
+                const numTimeSteps = parseInt(document.getElementById('numTimeSteps').value);
+                const t = Array.from({ length: numTimeSteps }, (_, i) => i * (timeMaxDays / (numTimeSteps - 1)));
+                
+                const y0 = [...C0_initial, ...M0_initial];
+                const params = {
+                    beta: beta_initial,
+                    mu: mu_initial,
+                    delta: delta_initial,
+                    K: K_initial,
+                    gamma: gamma_initial,
+                    num_components: num_components
+                };
+
+                // Solve ODEs using custom Euler solver
+                const solution_raw = solveODE(y0, t, params);
+
+                // Extract results
+                const C_results = solution_raw.map(row => row.slice(0, num_components));
+                const M_results = solution_raw.map(row => row.slice(num_components));
+
+                // Update charts
+                initializeSimulationCharts(t, C_results, M_results);
+
+                // Analyze degradation time
+                const degradationThresholdPercentage = 0.05; // 95% degraded
+                const degradationTimesDiv = document.getElementById('degradationTimes');
+                let degradationTimesHtml = '';
+
+                degradationTimesHtml += '<ul class="list-disc list-inside space-y-1">';
+                components.forEach((comp_name, i) => {
+                    const initialAmount = C0_initial[i];
+                    const thresholdAmount = degradationThresholdPercentage * initialAmount;
+                    let timeToDegrade = "Not fully degraded within " + timeMaxDays + " days";
+
+                    for (let k = 0; k < t.length; k++) {
+                        if (C_results[k][i] <= thresholdAmount) {
+                            timeToDegrade = `${t[k].toFixed(2)} days`;
+                            break;
+                        }
+                    }
+                    degradationTimesHtml += `<li><strong class="font-semibold">${comp_name}:</strong> ${timeToDegrade}</li>`;
                 });
-            });
+                degradationTimesHtml += '</ul>';
+                degradationTimesDiv.innerHTML = degradationTimesHtml;
 
+                // Start animation
+                animateDegradation(t, C_results);
+            }
+
+            // --- Combined DOMContentLoaded Listener ---
+            // This runs after the entire HTML document has been loaded and parsed.
+            // It calls all necessary initialization functions for both the infographic and the simulation.
+            
+            // Call infographic specific initializations (stat counters, method details, fungal chart, tabs)
+            // Note: Some of these rely on their specific HTML elements being present.
+            // The mobile menu button setup is already within this.
+
+            // Set default method on load for solutions hub
+            methodButtons[0].classList.add('active');
+            methodDetailsDiv.innerHTML = methodDetails['fungal'];
+
+            // Set default tab on load for future prospects
+            tabButtons[0].classList.add('active');
+            tabContentDiv.innerHTML = tabContent['valorization'];
+
+            // Call simulation specific initializations (display parameters and run simulation)
+            displaySimulationParameters();
+            document.getElementById('runSimulationBtn').addEventListener('click', runSimulation);
+            runSimulation(); // Run simulation once on page load to show initial state
         });
     </script>
-
 </body>
 </html>
