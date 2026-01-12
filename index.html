@@ -1,630 +1,402 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { 
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, 
-  AreaChart, Area, BarChart, Bar 
-} from 'recharts';
-import { 
-  Sprout, 
-  Trash2, 
-  Activity, 
-  Droplets, 
-  Wind, 
-  Zap, 
-  Microscope,
-  Info,
-  ChevronRight,
-  Menu,
-  X,
-  Github,
-  BookOpen,
-  FlaskConical,
-  Leaf
-} from 'lucide-react';
-
-/**
- * Fungal Degradation of Tire Waste
- * Interactive Web Experience based on research by Abhey Tiwari & Mansi Mazumdar
- */
-
-// --- Constants & Data based on the PDF ---
-
-const SECTIONS = {
-  HOME: 'home',
-  COMPOSITION: 'composition',
-  FUNGI: 'fungi',
-  SIMULATION: 'simulation',
-  IMPACT: 'impact'
-};
-
-const TIRE_COMPONENTS = [
-  { name: 'Natural Rubber (NR)', percent: 19, category: 'Rubber', color: '#10B981', desc: 'Polyisoprene from latex. High tensile strength.' },
-  { name: 'Synthetic Rubber (SBR/BR)', percent: 24, category: 'Rubber', color: '#3B82F6', desc: 'Styrene-Butadiene. Durable and abrasion resistant.' },
-  { name: 'Carbon Black', percent: 28, category: 'Filler', color: '#1F2937', desc: 'Reinforcing filler for strength and UV protection.' },
-  { name: 'Steel', percent: 12, category: 'Reinforcement', color: '#9CA3AF', desc: 'Belts and bead cores for structural integrity.' },
-  { name: 'Textile/Nylon', percent: 4, category: 'Reinforcement', color: '#F472B6', desc: 'Cords to maintain tire shape.' },
-  { name: 'Additives (ZnO, Sulfur)', percent: 13, category: 'Chemicals', color: '#F59E0B', desc: 'Vulcanization agents and anti-degradants.' },
-];
-
-const FUNGI_DATA = [
-  {
-    name: 'Penicillium chrysogenum',
-    role: 'The Backbone Breaker',
-    enzymes: ['Laccases', 'Peroxidases'],
-    mechanism: 'Secretes "molecular scissors" to attack the carbon-carbon double bonds in the rubber polymer backbone.',
-    efficiency: '40-64% mass loss in ~30 days (Lab Scale)',
-    color: 'text-emerald-600',
-    bg: 'bg-emerald-50'
-  },
-  {
-    name: 'Aspergillus niger',
-    role: 'The Detoxifier',
-    enzymes: ['Cutinases', 'Oxygenases'],
-    mechanism: 'Cleaves isoprene chains and produces organic acids that may help chelate/neutralize heavy metals like Zinc.',
-    efficiency: 'Up to 60% degradation in 28 days (Optimized)',
-    color: 'text-purple-600',
-    bg: 'bg-purple-50'
-  }
-];
-
-// --- Simulation Logic (Differential Equations Solver) ---
-
-const solveODE = (params, days = 365) => {
-  const { beta, mu, delta, K, interactions } = params;
-  
-  // Initial conditions
-  let C = 100; // Component starts at 100% (or kg)
-  let M = 1;   // Microbial biomass starts low
-  
-  const data = [];
-  const dt = 1; // Time step: 1 day
-
-  for (let t = 0; t <= days; t += dt) {
-    data.push({ day: t, component: Math.max(0, C), biomass: Math.max(0, M) });
-
-    // dC/dt = -beta * C * M
-    const dC = -beta * C * M;
-
-    // dM/dt = mu * M * (C / (K + C)) - delta * M
-    // Note: Simplified interactions for the demo to ensure stability
-    const dM = (mu * M * (C / (K + C))) - (delta * M);
-
-    C += dC * dt;
-    M += dM * dt;
-
-    if (C < 0) C = 0;
-    if (M < 0) M = 0;
-  }
-  return data;
-};
-
-// --- Components ---
-
-const Header = ({ activeSection, setActiveSection, mobileMenuOpen, setMobileMenuOpen }) => (
-  <nav className="bg-slate-900 text-white sticky top-0 z-50 shadow-lg">
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="flex items-center justify-between h-16">
-        <div className="flex items-center space-x-2">
-          <Sprout className="h-8 w-8 text-green-400" />
-          <span className="font-bold text-xl tracking-tight">BioTire</span>
-        </div>
-        
-        {/* Desktop Menu */}
-        <div className="hidden md:block">
-          <div className="ml-10 flex items-baseline space-x-4">
-            {Object.values(SECTIONS).map((section) => (
-              <button
-                key={section}
-                onClick={() => setActiveSection(section)}
-                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                  activeSection === section 
-                    ? 'bg-green-600 text-white' 
-                    : 'text-gray-300 hover:bg-slate-700 hover:text-white'
-                }`}
-              >
-                {section.charAt(0).toUpperCase() + section.slice(1)}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Mobile Menu Button */}
-        <div className="md:hidden">
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2 rounded-md text-gray-400 hover:text-white hover:bg-slate-700 focus:outline-none"
-          >
-            {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-          </button>
-        </div>
-      </div>
-    </div>
-
-    {/* Mobile Menu */}
-    {mobileMenuOpen && (
-      <div className="md:hidden bg-slate-800">
-        <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-          {Object.values(SECTIONS).map((section) => (
-            <button
-              key={section}
-              onClick={() => {
-                setActiveSection(section);
-                setMobileMenuOpen(false);
-              }}
-              className={`block w-full text-left px-3 py-2 rounded-md text-base font-medium ${
-                activeSection === section 
-                  ? 'bg-green-600 text-white' 
-                  : 'text-gray-300 hover:bg-slate-700 hover:text-white'
-              }`}
-            >
-              {section.charAt(0).toUpperCase() + section.slice(1)}
-            </button>
-          ))}
-        </div>
-      </div>
-    )}
-  </nav>
-);
-
-const Hero = ({ onStart }) => (
-  <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-green-900 min-h-[calc(100vh-64px)] flex items-center justify-center text-white px-4">
-    <div className="max-w-4xl mx-auto text-center space-y-8">
-      <div className="inline-flex items-center space-x-2 bg-green-500/20 text-green-300 px-4 py-1.5 rounded-full text-sm font-medium border border-green-500/30 backdrop-blur-sm">
-        <FlaskConical className="w-4 h-4" />
-        <span>Research by Abhey Tiwari & Mansi Mazumdar</span>
-      </div>
-      
-      <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-green-300 via-emerald-200 to-teal-300 pb-2">
-        Fungal Degradation of Tire Waste
-      </h1>
-      
-      <p className="text-xl md:text-2xl text-gray-300 max-w-2xl mx-auto leading-relaxed">
-        A biological approach to sustainable rubber recycling using <span className="text-green-400 italic">Penicillium</span> and <span className="text-purple-400 italic">Aspergillus</span>.
-      </p>
-
-      <div className="grid md:grid-cols-3 gap-6 text-left mt-12 bg-white/5 p-6 rounded-2xl border border-white/10 backdrop-blur-sm">
-        <div className="space-y-2">
-          <Trash2 className="w-8 h-8 text-red-400" />
-          <h3 className="font-bold text-lg">The Problem</h3>
-          <p className="text-sm text-gray-400">1.5 billion tires discarded annually. Leachates like 6PPD-Quinone threaten aquatic life.</p>
-        </div>
-        <div className="space-y-2">
-          <Microscope className="w-8 h-8 text-blue-400" />
-          <h3 className="font-bold text-lg">The Solution</h3>
-          <p className="text-sm text-gray-400">Fungal bioremediation uses enzymes to break down recalcitrant rubber polymers naturally.</p>
-        </div>
-        <div className="space-y-2">
-          <Activity className="w-8 h-8 text-green-400" />
-          <h3 className="font-bold text-lg">The Model</h3>
-          <p className="text-sm text-gray-400">SIR-based mathematical modeling simulates degradation timelines and optimizes efficiency.</p>
-        </div>
-      </div>
-
-      <div className="pt-8">
-        <button 
-          onClick={onStart}
-          className="bg-green-600 hover:bg-green-500 text-white font-bold py-4 px-8 rounded-full transition-all transform hover:scale-105 shadow-xl flex items-center mx-auto space-x-2"
-        >
-          <span>Explore the Data</span>
-          <ChevronRight className="w-5 h-5" />
-        </button>
-      </div>
-    </div>
-  </div>
-);
-
-const CompositionView = () => (
-  <div className="py-12 px-4 max-w-6xl mx-auto">
-    <div className="text-center mb-12">
-      <h2 className="text-3xl font-bold text-slate-800">Anatomy of a Challenge</h2>
-      <p className="text-slate-600 mt-2 max-w-2xl mx-auto">
-        Tires are highly engineered composites. This complexity makes them durable on the road but incredibly difficult to degrade in nature.
-      </p>
-    </div>
-
-    <div className="grid md:grid-cols-2 gap-12 items-center">
-      <div className="bg-white p-6 rounded-2xl shadow-xl border border-slate-100">
-        <h3 className="text-xl font-bold mb-6 text-slate-700">Material Composition (by weight)</h3>
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart layout="vertical" data={TIRE_COMPONENTS} margin={{ left: 40 }}>
-            <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-            <XAxis type="number" unit="%" />
-            <YAxis dataKey="name" type="category" width={100} style={{ fontSize: '12px' }} />
-            <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
-            <Bar dataKey="percent" radius={[0, 4, 4, 0]}>
-              {TIRE_COMPONENTS.map((entry, index) => (
-                <cell key={`cell-${index}`} fill={entry.color} />
-              ))}
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
-
-      <div className="space-y-4">
-        {TIRE_COMPONENTS.map((comp) => (
-          <div key={comp.name} className="flex items-start p-4 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors border-l-4" style={{ borderLeftColor: comp.color }}>
-            <div>
-              <div className="flex items-center space-x-2">
-                <h4 className="font-bold text-slate-800">{comp.name}</h4>
-                <span className="text-xs font-semibold px-2 py-0.5 rounded bg-slate-200 text-slate-600">{comp.percent}%</span>
-              </div>
-              <p className="text-sm text-slate-600 mt-1">{comp.desc}</p>
-            </div>
-          </div>
-        ))}
-        <div className="bg-blue-50 p-4 rounded-lg border border-blue-100 mt-6">
-          <div className="flex items-start space-x-3">
-            <Info className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-            <p className="text-sm text-blue-800">
-              <strong>Key Challenge:</strong> Vulcanization (sulfur cross-linking) creates a 3D network that most organisms cannot penetrate. Only specific fungi with oxidative enzymes can break these bonds.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-);
-
-const FungiView = () => (
-  <div className="py-12 px-4 max-w-6xl mx-auto bg-slate-50">
-    <div className="text-center mb-12">
-      <h2 className="text-3xl font-bold text-slate-800">The Biological Agents</h2>
-      <p className="text-slate-600 mt-2">Nature's recyclers capable of mineralizing complex hydrocarbons.</p>
-    </div>
-
-    <div className="grid md:grid-cols-2 gap-8">
-      {FUNGI_DATA.map((fungus) => (
-        <div key={fungus.name} className={`rounded-2xl p-8 shadow-lg border border-opacity-50 ${fungus.bg} border-${fungus.color.split('-')[1]}-200`}>
-          <div className="flex items-center space-x-3 mb-4">
-            <div className={`p-3 rounded-full bg-white shadow-sm ${fungus.color}`}>
-              <Leaf className="w-6 h-6" />
-            </div>
-            <div>
-              <h3 className={`text-2xl font-bold ${fungus.color}`}>{fungus.name}</h3>
-              <span className="text-sm font-medium text-gray-500 uppercase tracking-wider">{fungus.role}</span>
-            </div>
-          </div>
-          
-          <div className="space-y-6">
-            <div>
-              <h4 className="font-semibold text-gray-900 mb-2 flex items-center">
-                <Zap className="w-4 h-4 mr-2" /> Enzymatic Arsenal
-              </h4>
-              <div className="flex flex-wrap gap-2">
-                {fungus.enzymes.map(enzyme => (
-                  <span key={enzyme} className="px-3 py-1 bg-white rounded-full text-sm font-medium text-gray-700 shadow-sm border border-gray-100">
-                    {enzyme}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <h4 className="font-semibold text-gray-900 mb-2">Mechanism</h4>
-              <p className="text-gray-700 leading-relaxed">{fungus.mechanism}</p>
-            </div>
-
-            <div className="bg-white/60 p-4 rounded-lg">
-              <h4 className="font-semibold text-gray-900 mb-1">Performance (Paper Data)</h4>
-              <p className="text-gray-800 font-medium">{fungus.efficiency}</p>
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
-
-    <div className="mt-12 bg-white p-6 rounded-xl shadow border border-slate-200">
-      <h3 className="text-lg font-bold text-slate-800 mb-4">Synergistic Potential</h3>
-      <p className="text-slate-600 mb-4">
-        The research suggests that single strains often have limits. A <strong>Microbial Consortium</strong> approach is proposed where:
-      </p>
-      <ul className="list-disc list-inside space-y-2 text-slate-700 ml-4">
-        <li><strong>Fungi</strong> (Penicillium) cleave the carbon backbone.</li>
-        <li><strong>Bacteria</strong> (Thiobacillus) oxidize the sulfur cross-links.</li>
-        <li><strong>Specialized strains</strong> detoxify heavy metals like Zinc.</li>
-      </ul>
-    </div>
-  </div>
-);
-
-const SimulationView = () => {
-  // Parameters based on the SIR-like model in the paper
-  // Defaults set to approximate "Rapid" degradation for demo purposes
-  const [params, setParams] = useState({
-    beta: 0.005, // Degradation rate
-    mu: 0.08,    // Microbial growth rate
-    delta: 0.02, // Microbial death rate
-    K: 50        // Half-saturation constant
-  });
-
-  const [preset, setPreset] = useState('custom');
-
-  const handlePresetChange = (type) => {
-    setPreset(type);
-    if (type === 'natural') { // Natural Rubber - Fast
-      setParams({ beta: 0.008, mu: 0.12, delta: 0.01, K: 40 });
-    } else if (type === 'synthetic') { // SBR - Medium
-      setParams({ beta: 0.004, mu: 0.06, delta: 0.02, K: 60 });
-    } else if (type === 'recalcitrant') { // Hard components - Slow
-      setParams({ beta: 0.001, mu: 0.03, delta: 0.02, K: 100 });
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BioTire Research - Fungal Degradation</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Import Map to resolve 'react' module specifiers -->
+    <script type="importmap">
+    {
+        "imports": {
+            "react": "https://esm.sh/react@18.2.0",
+            "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+            "recharts": "https://esm.sh/recharts@2.12.0?external=react,react-dom",
+            "lucide-react": "https://esm.sh/lucide-react@0.344.0?external=react"
+        }
     }
-  };
+    </script>
+    
+    <style>
+        /* Custom scrollbar for mobile feel */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #888; border-radius: 3px; }
+        body { -webkit-tap-highlight-color: transparent; }
+    </style>
+</head>
+<body class="bg-slate-50">
+    <div id="root"></div>
 
-  const data = useMemo(() => solveODE(params), [params]);
+    <!-- React App Script -->
+    <script type="text/babel" data-type="module">
+        import React, { useState, useEffect, useMemo } from 'react';
+        import ReactDOM from 'react-dom/client';
+        import { 
+            LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, 
+            AreaChart, Area, BarChart, Bar 
+        } from 'recharts';
+        import { 
+            Sprout, Trash2, Activity, Droplets, Wind, Zap, Microscope, Info, 
+            ChevronRight, Menu, X, Github, BookOpen, FlaskConical, Leaf 
+        } from 'lucide-react';
 
-  // Calculate stats
-  const daysTo95 = data.find(d => d.component <= 5)?.day || '> 365';
-  const finalBiomass = data[data.length - 1].biomass.toFixed(2);
+        // --- Constants & Data ---
 
-  return (
-    <div className="py-12 px-4 max-w-7xl mx-auto">
-      <div className="mb-8">
-        <h2 className="text-3xl font-bold text-slate-800">Biodegradation Simulator</h2>
-        <p className="text-slate-600 mt-2">
-          Interactive implementation of the coupled ODE model described in Section IV.
-          <br/>
-          <span className="font-mono text-xs bg-slate-100 p-1 rounded">dC/dt = -β·C·M</span> and <span className="font-mono text-xs bg-slate-100 p-1 rounded">dM/dt = μ·M·(C/(K+C)) - δ·M</span>
-        </p>
-      </div>
+        const SECTIONS = {
+            HOME: 'home',
+            COMPOSITION: 'composition',
+            FUNGI: 'fungi',
+            SIMULATION: 'simulation',
+            IMPACT: 'impact'
+        };
 
-      <div className="grid lg:grid-cols-3 gap-8">
-        {/* Controls */}
-        <div className="bg-white p-6 rounded-2xl shadow-lg border border-slate-100 h-fit">
-          <div className="mb-6">
-            <h3 className="font-bold text-gray-700 mb-3">Scenarios</h3>
-            <div className="grid grid-cols-3 gap-2">
-              <button 
-                onClick={() => handlePresetChange('natural')}
-                className={`px-3 py-2 text-xs font-bold rounded transition-colors ${preset === 'natural' ? 'bg-green-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
-              >
-                Natural Rubber
-              </button>
-              <button 
-                onClick={() => handlePresetChange('synthetic')}
-                className={`px-3 py-2 text-xs font-bold rounded transition-colors ${preset === 'synthetic' ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
-              >
-                Synthetic (SBR)
-              </button>
-              <button 
-                onClick={() => handlePresetChange('recalcitrant')}
-                className={`px-3 py-2 text-xs font-bold rounded transition-colors ${preset === 'recalcitrant' ? 'bg-red-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
-              >
-                Recalcitrant
-              </button>
+        const TIRE_COMPONENTS = [
+            { name: 'Natural Rubber (NR)', percent: 19, category: 'Rubber', color: '#10B981', desc: 'Polyisoprene from latex. High tensile strength.' },
+            { name: 'Synthetic Rubber (SBR)', percent: 24, category: 'Rubber', color: '#3B82F6', desc: 'Styrene-Butadiene. Durable and abrasion resistant.' },
+            { name: 'Carbon Black', percent: 28, category: 'Filler', color: '#1F2937', desc: 'Reinforcing filler for strength and UV protection.' },
+            { name: 'Steel', percent: 12, category: 'Reinforcement', color: '#9CA3AF', desc: 'Belts and bead cores for structural integrity.' },
+            { name: 'Textile/Nylon', percent: 4, category: 'Reinforcement', color: '#F472B6', desc: 'Cords to maintain tire shape.' },
+            { name: 'Additives', percent: 13, category: 'Chemicals', color: '#F59E0B', desc: 'Vulcanization agents (Sulfur, ZnO) and anti-degradants.' },
+        ];
+
+        const FUNGI_DATA = [
+            {
+                name: 'Penicillium chrysogenum',
+                role: 'The Backbone Breaker',
+                enzymes: ['Laccases', 'Peroxidases'],
+                mechanism: 'Secretes "molecular scissors" to attack the carbon-carbon double bonds in the rubber polymer backbone.',
+                efficiency: '40-64% mass loss in ~30 days (Lab Scale)',
+                color: 'text-emerald-600',
+                bg: 'bg-emerald-50'
+            },
+            {
+                name: 'Aspergillus niger',
+                role: 'The Detoxifier',
+                enzymes: ['Cutinases', 'Oxygenases'],
+                mechanism: 'Cleaves isoprene chains and produces organic acids that may help chelate/neutralize heavy metals like Zinc.',
+                efficiency: 'Up to 60% degradation in 28 days (Optimized)',
+                color: 'text-purple-600',
+                bg: 'bg-purple-50'
+            }
+        ];
+
+        // --- Simulation Logic ---
+
+        const solveODE = (params, days = 365) => {
+            const { beta, mu, delta, K } = params;
+            let C = 100; 
+            let M = 1;   
+            const data = [];
+            const dt = 1;
+
+            for (let t = 0; t <= days; t += dt) {
+                data.push({ day: t, component: Math.max(0, C), biomass: Math.max(0, M) });
+                const dC = -beta * C * M;
+                const dM = (mu * M * (C / (K + C))) - (delta * M);
+                C += dC * dt;
+                M += dM * dt;
+                if (C < 0) C = 0;
+                if (M < 0) M = 0;
+            }
+            return data;
+        };
+
+        // --- Components ---
+
+        const Header = ({ activeSection, setActiveSection, mobileMenuOpen, setMobileMenuOpen }) => (
+            <nav className="bg-slate-900 text-white sticky top-0 z-50 shadow-lg">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="flex items-center justify-between h-16">
+                        <div className="flex items-center space-x-2">
+                            <Sprout className="h-8 w-8 text-green-400" />
+                            <span className="font-bold text-xl tracking-tight">BioTire</span>
+                        </div>
+                        <div className="hidden md:block">
+                            <div className="ml-10 flex items-baseline space-x-4">
+                                {Object.values(SECTIONS).map((section) => (
+                                    <button
+                                        key={section}
+                                        onClick={() => setActiveSection(section)}
+                                        className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                                            activeSection === section ? 'bg-green-600 text-white' : 'text-gray-300 hover:bg-slate-700'
+                                        }`}
+                                    >
+                                        {section.charAt(0).toUpperCase() + section.slice(1)}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                        <div className="md:hidden">
+                            <button
+                                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                                className="p-2 rounded-md text-gray-400 hover:text-white hover:bg-slate-700 focus:outline-none"
+                            >
+                                {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {mobileMenuOpen && (
+                    <div className="md:hidden bg-slate-800">
+                        <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                            {Object.values(SECTIONS).map((section) => (
+                                <button
+                                    key={section}
+                                    onClick={() => { setActiveSection(section); setMobileMenuOpen(false); }}
+                                    className={`block w-full text-left px-3 py-2 rounded-md text-base font-medium ${
+                                        activeSection === section ? 'bg-green-600 text-white' : 'text-gray-300 hover:bg-slate-700'
+                                    }`}
+                                >
+                                    {section.charAt(0).toUpperCase() + section.slice(1)}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                )}
+            </nav>
+        );
+
+        const Hero = ({ onStart }) => (
+            <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-green-900 min-h-[calc(100vh-64px)] flex items-center justify-center text-white px-4">
+                <div className="max-w-4xl mx-auto text-center space-y-8">
+                    <div className="inline-flex items-center space-x-2 bg-green-500/20 text-green-300 px-4 py-1.5 rounded-full text-sm font-medium border border-green-500/30 backdrop-blur-sm">
+                        <FlaskConical className="w-4 h-4" />
+                        <span>Research by Abhey Tiwari & Mansi Mazumdar</span>
+                    </div>
+                    <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-green-300 via-emerald-200 to-teal-300 pb-2">
+                        Fungal Degradation of Tire Waste
+                    </h1>
+                    <p className="text-xl md:text-2xl text-gray-300 max-w-2xl mx-auto leading-relaxed">
+                        A biological approach to sustainable rubber recycling using <span className="text-green-400 italic">Penicillium</span> and <span className="text-purple-400 italic">Aspergillus</span>.
+                    </p>
+                    <div className="grid md:grid-cols-3 gap-6 text-left mt-12 bg-white/5 p-6 rounded-2xl border border-white/10 backdrop-blur-sm">
+                        <div className="space-y-2">
+                            <Trash2 className="w-8 h-8 text-red-400" />
+                            <h3 className="font-bold text-lg">The Problem</h3>
+                            <p className="text-sm text-gray-400">1.5 billion tires discarded annually. Leachates like 6PPD-Quinone threaten aquatic life.</p>
+                        </div>
+                        <div className="space-y-2">
+                            <Microscope className="w-8 h-8 text-blue-400" />
+                            <h3 className="font-bold text-lg">The Solution</h3>
+                            <p className="text-sm text-gray-400">Fungal bioremediation uses enzymes to break down recalcitrant rubber polymers naturally.</p>
+                        </div>
+                        <div className="space-y-2">
+                            <Activity className="w-8 h-8 text-green-400" />
+                            <h3 className="font-bold text-lg">The Model</h3>
+                            <p className="text-sm text-gray-400">SIR-based mathematical modeling simulates degradation timelines and optimizes efficiency.</p>
+                        </div>
+                    </div>
+                    <div className="pt-8">
+                        <button onClick={onStart} className="bg-green-600 hover:bg-green-500 text-white font-bold py-4 px-8 rounded-full transition-all transform hover:scale-105 shadow-xl flex items-center mx-auto space-x-2">
+                            <span>Explore the Data</span>
+                            <ChevronRight className="w-5 h-5" />
+                        </button>
+                    </div>
+                </div>
             </div>
-          </div>
+        );
 
-          <div className="space-y-6">
-            <h3 className="font-bold text-gray-700 border-b pb-2">Model Parameters</h3>
-            
-            <div>
-              <div className="flex justify-between text-sm mb-1">
-                <span className="text-gray-600">Degradation Rate (β)</span>
-                <span className="font-mono">{params.beta.toFixed(4)}</span>
-              </div>
-              <input 
-                type="range" min="0.0001" max="0.02" step="0.0001"
-                value={params.beta}
-                onChange={(e) => { setPreset('custom'); setParams({...params, beta: parseFloat(e.target.value)})} }
-                className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-green-600"
-              />
+        const CompositionView = () => (
+            <div className="py-12 px-4 max-w-6xl mx-auto">
+                <div className="text-center mb-12">
+                    <h2 className="text-3xl font-bold text-slate-800">Anatomy of a Challenge</h2>
+                    <p className="text-slate-600 mt-2 max-w-2xl mx-auto">Tires are highly engineered composites. This complexity makes them durable on the road but incredibly difficult to degrade in nature.</p>
+                </div>
+                <div className="grid md:grid-cols-2 gap-12 items-center">
+                    <div className="bg-white p-6 rounded-2xl shadow-xl border border-slate-100">
+                        <h3 className="text-xl font-bold mb-6 text-slate-700">Material Composition (by weight)</h3>
+                        <ResponsiveContainer width="100%" height={300}>
+                            <BarChart layout="vertical" data={TIRE_COMPONENTS} margin={{ left: 40 }}>
+                                <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                                <XAxis type="number" unit="%" />
+                                <YAxis dataKey="name" type="category" width={100} style={{ fontSize: '12px' }} />
+                                <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
+                                <Bar dataKey="percent" radius={[0, 4, 4, 0]}>
+                                    {TIRE_COMPONENTS.map((entry, index) => <cell key={`cell-${index}`} fill={entry.color} />)}
+                                </Bar>
+                            </BarChart>
+                        </ResponsiveContainer>
+                    </div>
+                    <div className="space-y-4">
+                        {TIRE_COMPONENTS.map((comp) => (
+                            <div key={comp.name} className="flex items-start p-4 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors border-l-4" style={{ borderLeftColor: comp.color }}>
+                                <div>
+                                    <div className="flex items-center space-x-2">
+                                        <h4 className="font-bold text-slate-800">{comp.name}</h4>
+                                        <span className="text-xs font-semibold px-2 py-0.5 rounded bg-slate-200 text-slate-600">{comp.percent}%</span>
+                                    </div>
+                                    <p className="text-sm text-slate-600 mt-1">{comp.desc}</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
             </div>
+        );
 
-            <div>
-              <div className="flex justify-between text-sm mb-1">
-                <span className="text-gray-600">Growth Rate (μ)</span>
-                <span className="font-mono">{params.mu.toFixed(3)}</span>
-              </div>
-              <input 
-                type="range" min="0.01" max="0.2" step="0.01"
-                value={params.mu}
-                onChange={(e) => { setPreset('custom'); setParams({...params, mu: parseFloat(e.target.value)})} }
-                className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
-              />
+        const FungiView = () => (
+            <div className="py-12 px-4 max-w-6xl mx-auto bg-slate-50">
+                <div className="text-center mb-12">
+                    <h2 className="text-3xl font-bold text-slate-800">The Biological Agents</h2>
+                    <p className="text-slate-600 mt-2">Nature's recyclers capable of mineralizing complex hydrocarbons.</p>
+                </div>
+                <div className="grid md:grid-cols-2 gap-8">
+                    {FUNGI_DATA.map((fungus) => (
+                        <div key={fungus.name} className={`rounded-2xl p-8 shadow-lg border border-opacity-50 ${fungus.bg} border-${fungus.color.split('-')[1]}-200`}>
+                            <div className="flex items-center space-x-3 mb-4">
+                                <div className={`p-3 rounded-full bg-white shadow-sm ${fungus.color}`}><Leaf className="w-6 h-6" /></div>
+                                <div>
+                                    <h3 className={`text-2xl font-bold ${fungus.color}`}>{fungus.name}</h3>
+                                    <span className="text-sm font-medium text-gray-500 uppercase tracking-wider">{fungus.role}</span>
+                                </div>
+                            </div>
+                            <div className="space-y-6">
+                                <div>
+                                    <h4 className="font-semibold text-gray-900 mb-2 flex items-center"><Zap className="w-4 h-4 mr-2" /> Enzymatic Arsenal</h4>
+                                    <div className="flex flex-wrap gap-2">
+                                        {fungus.enzymes.map(enzyme => (
+                                            <span key={enzyme} className="px-3 py-1 bg-white rounded-full text-sm font-medium text-gray-700 shadow-sm border border-gray-100">{enzyme}</span>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div><h4 className="font-semibold text-gray-900 mb-2">Mechanism</h4><p className="text-gray-700 leading-relaxed">{fungus.mechanism}</p></div>
+                                <div className="bg-white/60 p-4 rounded-lg"><h4 className="font-semibold text-gray-900 mb-1">Performance</h4><p className="text-gray-800 font-medium">{fungus.efficiency}</p></div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
             </div>
+        );
 
-            <div>
-              <div className="flex justify-between text-sm mb-1">
-                <span className="text-gray-600">Death Rate (δ)</span>
-                <span className="font-mono">{params.delta.toFixed(3)}</span>
-              </div>
-              <input 
-                type="range" min="0.001" max="0.1" step="0.001"
-                value={params.delta}
-                onChange={(e) => { setPreset('custom'); setParams({...params, delta: parseFloat(e.target.value)})} }
-                className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-red-600"
-              />
+        const SimulationView = () => {
+            const [params, setParams] = useState({ beta: 0.005, mu: 0.08, delta: 0.02, K: 50 });
+            const [preset, setPreset] = useState('custom');
+
+            const handlePresetChange = (type) => {
+                setPreset(type);
+                if (type === 'natural') setParams({ beta: 0.008, mu: 0.12, delta: 0.01, K: 40 });
+                else if (type === 'synthetic') setParams({ beta: 0.004, mu: 0.06, delta: 0.02, K: 60 });
+                else if (type === 'recalcitrant') setParams({ beta: 0.001, mu: 0.03, delta: 0.02, K: 100 });
+            };
+
+            const data = useMemo(() => solveODE(params), [params]);
+            const daysTo95 = data.find(d => d.component <= 5)?.day || '> 365';
+            const finalBiomass = data[data.length - 1].biomass.toFixed(2);
+
+            return (
+                <div className="py-12 px-4 max-w-7xl mx-auto">
+                    <div className="mb-8">
+                        <h2 className="text-3xl font-bold text-slate-800">Biodegradation Simulator</h2>
+                        <p className="text-slate-600 mt-2">Interactive implementation of the coupled ODE model described in Section IV.</p>
+                    </div>
+                    <div className="grid lg:grid-cols-3 gap-8">
+                        <div className="bg-white p-6 rounded-2xl shadow-lg border border-slate-100 h-fit">
+                            <div className="mb-6">
+                                <h3 className="font-bold text-gray-700 mb-3">Scenarios</h3>
+                                <div className="grid grid-cols-3 gap-2">
+                                    <button onClick={() => handlePresetChange('natural')} className={`px-3 py-2 text-xs font-bold rounded ${preset === 'natural' ? 'bg-green-600 text-white' : 'bg-slate-100 text-slate-600'}`}>Natural</button>
+                                    <button onClick={() => handlePresetChange('synthetic')} className={`px-3 py-2 text-xs font-bold rounded ${preset === 'synthetic' ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600'}`}>SBR</button>
+                                    <button onClick={() => handlePresetChange('recalcitrant')} className={`px-3 py-2 text-xs font-bold rounded ${preset === 'recalcitrant' ? 'bg-red-600 text-white' : 'bg-slate-100 text-slate-600'}`}>Recalcitrant</button>
+                                </div>
+                            </div>
+                            <div className="space-y-6">
+                                <h3 className="font-bold text-gray-700 border-b pb-2">Parameters</h3>
+                                <div><div className="flex justify-between text-sm mb-1"><span>Degradation (β)</span><span>{params.beta.toFixed(4)}</span></div><input type="range" min="0.0001" max="0.02" step="0.0001" value={params.beta} onChange={(e) => { setPreset('custom'); setParams({...params, beta: parseFloat(e.target.value)})} } className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-green-600" /></div>
+                                <div><div className="flex justify-between text-sm mb-1"><span>Growth (μ)</span><span>{params.mu.toFixed(3)}</span></div><input type="range" min="0.01" max="0.2" step="0.01" value={params.mu} onChange={(e) => { setPreset('custom'); setParams({...params, mu: parseFloat(e.target.value)})} } className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600" /></div>
+                                <div><div className="flex justify-between text-sm mb-1"><span>Death (δ)</span><span>{params.delta.toFixed(3)}</span></div><input type="range" min="0.001" max="0.1" step="0.001" value={params.delta} onChange={(e) => { setPreset('custom'); setParams({...params, delta: parseFloat(e.target.value)})} } className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-red-600" /></div>
+                                <div className="pt-4 mt-4 border-t border-slate-100 grid grid-cols-2 gap-4">
+                                    <div className="text-center p-3 bg-slate-50 rounded-lg"><div className="text-xs text-slate-500 uppercase font-bold">Days to 95%</div><div className="text-xl font-bold text-green-600">{daysTo95}</div></div>
+                                    <div className="text-center p-3 bg-slate-50 rounded-lg"><div className="text-xs text-slate-500 uppercase font-bold">Biomass (kg)</div><div className="text-xl font-bold text-blue-600">{finalBiomass}</div></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="lg:col-span-2 bg-white p-6 rounded-2xl shadow-lg border border-slate-100 min-h-[500px] flex flex-col">
+                            <h3 className="font-bold text-gray-700 mb-6">Simulation Result</h3>
+                            <ResponsiveContainer width="100%" height="100%">
+                                <AreaChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                                    <defs>
+                                        <linearGradient id="colorComp" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#10B981" stopOpacity={0.1}/><stop offset="95%" stopColor="#10B981" stopOpacity={0}/></linearGradient>
+                                        <linearGradient id="colorBio" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#3B82F6" stopOpacity={0.1}/><stop offset="95%" stopColor="#3B82F6" stopOpacity={0}/></linearGradient>
+                                    </defs>
+                                    <XAxis dataKey="day" /><YAxis yAxisId="left" /><YAxis yAxisId="right" orientation="right" />
+                                    <CartesianGrid strokeDasharray="3 3" vertical={false} /><Tooltip /><Legend verticalAlign="top" height={36}/>
+                                    <Area yAxisId="left" type="monotone" dataKey="component" name="Tire Component (%)" stroke="#10B981" strokeWidth={3} fillOpacity={1} fill="url(#colorComp)" />
+                                    <Area yAxisId="right" type="monotone" dataKey="biomass" name="Microbial Biomass (kg)" stroke="#3B82F6" strokeWidth={3} fillOpacity={1} fill="url(#colorBio)" />
+                                </AreaChart>
+                            </ResponsiveContainer>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const ImpactView = () => (
+            <div className="py-12 px-4 max-w-4xl mx-auto">
+                <div className="text-center mb-12">
+                    <h2 className="text-3xl font-bold text-slate-800">Environmental Impact</h2>
+                    <p className="text-slate-600 mt-2">Why fungi beat fire and landfills.</p>
+                </div>
+                <div className="bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden mb-8">
+                    <div className="grid md:grid-cols-2">
+                        <div className="p-8 bg-slate-50 border-r border-slate-100">
+                            <h3 className="text-xl font-bold text-slate-800 mb-6 flex items-center"><Sprout className="w-6 h-6 mr-2 text-green-600" /> Fungal Bioremediation</h3>
+                            <ul className="space-y-4">
+                                <li className="flex items-start"><div><h4 className="font-bold text-slate-700">Low Emissions</h4><p className="text-sm text-slate-500">Only CO₂ from respiration.</p></div></li>
+                                <li className="flex items-start"><div><h4 className="font-bold text-slate-700">6PPD Detox</h4><p className="text-sm text-slate-500">Biological pathways may degrade toxins.</p></div></li>
+                            </ul>
+                        </div>
+                        <div className="p-8 bg-white">
+                            <h3 className="text-xl font-bold text-slate-800 mb-6 flex items-center"><Wind className="w-6 h-6 mr-2 text-gray-500" /> Traditional Methods</h3>
+                            <ul className="space-y-4 opacity-75">
+                                <li className="flex items-start"><div><h4 className="font-bold text-slate-700">Incineration</h4><p className="text-sm text-slate-500">Releases PAHs and dioxins.</p></div></li>
+                                <li className="flex items-start"><div><h4 className="font-bold text-slate-700">Landfilling</h4><p className="text-sm text-slate-500">Fire hazard & disease vectors.</p></div></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
             </div>
-            
-            <div className="pt-4 mt-4 border-t border-slate-100">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="text-center p-3 bg-slate-50 rounded-lg">
-                  <div className="text-xs text-slate-500 uppercase font-bold">Time to 95% loss</div>
-                  <div className="text-xl font-bold text-green-600">{daysTo95} <span className="text-sm text-gray-400">days</span></div>
+        );
+
+        const Footer = () => (
+            <footer className="bg-slate-900 text-slate-400 py-8 px-4 text-center">
+                <div className="max-w-4xl mx-auto space-y-4">
+                    <div className="flex justify-center items-center space-x-2 text-white"><Github className="w-5 h-5" /><span className="font-bold">Original Research Demo</span></div>
+                    <p className="text-sm">Based on: <em>Fungal Degradation of Tire Waste</em><br />By Abhey Tiwari & Mansi Mazumdar, Maharaja Agrasen College.</p>
                 </div>
-                <div className="text-center p-3 bg-slate-50 rounded-lg">
-                  <div className="text-xs text-slate-500 uppercase font-bold">Max Biomass</div>
-                  <div className="text-xl font-bold text-blue-600">{finalBiomass} <span className="text-sm text-gray-400">kg</span></div>
+            </footer>
+        );
+
+        const App = () => {
+            const [activeSection, setActiveSection] = useState(SECTIONS.HOME);
+            const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+            const renderSection = () => {
+                switch(activeSection) {
+                    case SECTIONS.HOME: return <Hero onStart={() => setActiveSection(SECTIONS.COMPOSITION)} />;
+                    case SECTIONS.COMPOSITION: return <CompositionView />;
+                    case SECTIONS.FUNGI: return <FungiView />;
+                    case SECTIONS.SIMULATION: return <SimulationView />;
+                    case SECTIONS.IMPACT: return <ImpactView />;
+                    default: return <Hero />;
+                }
+            };
+
+            return (
+                <div className="min-h-screen bg-white font-sans text-slate-900">
+                    <Header activeSection={activeSection} setActiveSection={setActiveSection} mobileMenuOpen={mobileMenuOpen} setMobileMenuOpen={setMobileMenuOpen} />
+                    <main className="animate-in fade-in duration-500">{renderSection()}</main>
+                    {activeSection !== SECTIONS.HOME && <Footer />}
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
+            );
+        };
 
-        {/* Chart */}
-        <div className="lg:col-span-2 bg-white p-6 rounded-2xl shadow-lg border border-slate-100 min-h-[500px] flex flex-col">
-          <h3 className="font-bold text-gray-700 mb-6">Component Mass vs. Microbial Biomass (365 Days)</h3>
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-              <defs>
-                <linearGradient id="colorComp" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#10B981" stopOpacity={0.1}/>
-                  <stop offset="95%" stopColor="#10B981" stopOpacity={0}/>
-                </linearGradient>
-                <linearGradient id="colorBio" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.1}/>
-                  <stop offset="95%" stopColor="#3B82F6" stopOpacity={0}/>
-                </linearGradient>
-              </defs>
-              <XAxis dataKey="day" label={{ value: 'Days', position: 'insideBottomRight', offset: -10 }} />
-              <YAxis yAxisId="left" label={{ value: 'Component Remaining (%)', angle: -90, position: 'insideLeft' }} />
-              <YAxis yAxisId="right" orientation="right" label={{ value: 'Biomass (kg)', angle: 90, position: 'insideRight' }} />
-              <CartesianGrid strokeDasharray="3 3" vertical={false} />
-              <Tooltip 
-                contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
-                labelFormatter={(value) => `Day ${value}`}
-              />
-              <Legend verticalAlign="top" height={36}/>
-              <Area 
-                yAxisId="left"
-                type="monotone" 
-                dataKey="component" 
-                name="Tire Component" 
-                stroke="#10B981" 
-                strokeWidth={3}
-                fillOpacity={1} 
-                fill="url(#colorComp)" 
-              />
-              <Area 
-                yAxisId="right"
-                type="monotone" 
-                dataKey="biomass" 
-                name="Microbial Biomass" 
-                stroke="#3B82F6" 
-                strokeWidth={3}
-                fillOpacity={1} 
-                fill="url(#colorBio)" 
-              />
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const ImpactView = () => (
-  <div className="py-12 px-4 max-w-4xl mx-auto">
-    <div className="text-center mb-12">
-      <h2 className="text-3xl font-bold text-slate-800">Environmental Impact</h2>
-      <p className="text-slate-600 mt-2">Why fungi beat fire and landfills.</p>
-    </div>
-
-    <div className="space-y-8">
-      <div className="bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden">
-        <div className="grid md:grid-cols-2">
-          <div className="p-8 bg-slate-50 border-b md:border-b-0 md:border-r border-slate-100">
-            <h3 className="text-xl font-bold text-slate-800 mb-6 flex items-center">
-              <Sprout className="w-6 h-6 mr-2 text-green-600" /> Fungal Bioremediation
-            </h3>
-            <ul className="space-y-4">
-              <li className="flex items-start">
-                <div className="bg-green-100 p-1 rounded mr-3 mt-1"><Leaf className="w-4 h-4 text-green-700" /></div>
-                <div>
-                  <h4 className="font-bold text-slate-700">Low Emissions</h4>
-                  <p className="text-sm text-slate-500">Operates at ambient temperature. Only CO₂ from respiration is released.</p>
-                </div>
-              </li>
-              <li className="flex items-start">
-                <div className="bg-green-100 p-1 rounded mr-3 mt-1"><Droplets className="w-4 h-4 text-green-700" /></div>
-                <div>
-                  <h4 className="font-bold text-slate-700">Potential 6PPD Detox</h4>
-                  <p className="text-sm text-slate-500">Biological pathways may degrade toxic quinones protecting salmonid fish.</p>
-                </div>
-              </li>
-              <li className="flex items-start">
-                <div className="bg-green-100 p-1 rounded mr-3 mt-1"><Activity className="w-4 h-4 text-green-700" /></div>
-                <div>
-                  <h4 className="font-bold text-slate-700">Circular Economy</h4>
-                  <p className="text-sm text-slate-500">Resulting biomass can be used as soil amendment or fertilizer.</p>
-                </div>
-              </li>
-            </ul>
-          </div>
-
-          <div className="p-8 bg-white">
-            <h3 className="text-xl font-bold text-slate-800 mb-6 flex items-center">
-              <Wind className="w-6 h-6 mr-2 text-gray-500" /> Traditional Methods
-            </h3>
-            <ul className="space-y-4 opacity-75">
-              <li className="flex items-start">
-                <div className="bg-red-100 p-1 rounded mr-3 mt-1"><Trash2 className="w-4 h-4 text-red-700" /></div>
-                <div>
-                  <h4 className="font-bold text-slate-700">Incineration/Pyrolysis</h4>
-                  <p className="text-sm text-slate-500">Energy intensive. Releases PAHs, dioxins, and greenhouse gases.</p>
-                </div>
-              </li>
-              <li className="flex items-start">
-                <div className="bg-red-100 p-1 rounded mr-3 mt-1"><X className="w-4 h-4 text-red-700" /></div>
-                <div>
-                  <h4 className="font-bold text-slate-700">Landfilling</h4>
-                  <p className="text-sm text-slate-500">Centuries to decompose. Fire hazard. Breeding ground for disease vectors.</p>
-                </div>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-      
-      <div className="bg-blue-50 p-6 rounded-xl border border-blue-100 flex items-start gap-4">
-         <BookOpen className="w-6 h-6 text-blue-600 flex-shrink-0 mt-1" />
-         <div>
-           <h4 className="font-bold text-blue-900 mb-1">Conclusion from the Paper</h4>
-           <p className="text-blue-800 text-sm leading-relaxed">
-             "The work underscores fungal bioremediation as a promising, eco-friendly alternative... transforming tire waste from an environmental burden into a sustainable resource, albeit acknowledging that this research is an initial step."
-           </p>
-         </div>
-      </div>
-    </div>
-  </div>
-);
-
-const Footer = () => (
-  <footer className="bg-slate-900 text-slate-400 py-8 px-4 text-center">
-    <div className="max-w-4xl mx-auto space-y-4">
-      <div className="flex justify-center items-center space-x-2 text-white">
-        <Github className="w-5 h-5" />
-        <span className="font-bold">Original Research Demo</span>
-      </div>
-      <p className="text-sm">
-        Based on: <em>Fungal Degradation of Tire Waste: A Biological Approach to Sustainable Rubber Recycling</em>
-        <br />
-        By Abhey Tiwari & Mansi Mazumdar, Maharaja Agrasen College, Delhi University.
-      </p>
-      <div className="text-xs pt-4 border-t border-slate-800">
-        Demo recreated for educational purposes.
-      </div>
-    </div>
-  </footer>
-);
-
-export default function App() {
-  const [activeSection, setActiveSection] = useState(SECTIONS.HOME);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  // Simple router for the SPA feel
-  const renderSection = () => {
-    switch(activeSection) {
-      case SECTIONS.HOME: return <Hero onStart={() => setActiveSection(SECTIONS.COMPOSITION)} />;
-      case SECTIONS.COMPOSITION: return <CompositionView />;
-      case SECTIONS.FUNGI: return <FungiView />;
-      case SECTIONS.SIMULATION: return <SimulationView />;
-      case SECTIONS.IMPACT: return <ImpactView />;
-      default: return <Hero />;
-    }
-  };
-
-  return (
-    <div className="min-h-screen bg-white font-sans text-slate-900">
-      <Header 
-        activeSection={activeSection} 
-        setActiveSection={setActiveSection}
-        mobileMenuOpen={mobileMenuOpen}
-        setMobileMenuOpen={setMobileMenuOpen}
-      />
-      <main className="animate-in fade-in duration-500">
-        {renderSection()}
-      </main>
-      {activeSection !== SECTIONS.HOME && <Footer />}
-    </div>
-  );
-}
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
